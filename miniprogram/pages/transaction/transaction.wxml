@@ -1,0 +1,42 @@
+<view class="container">
+  <view class="filter-bar">
+    <picker mode="selector" range="{{accountNames}}" value="{{accountIndex}}" bindchange="onAccountChange">
+      <view class="filter-item">{{accountNames[accountIndex] || '全部账户'}} ▼</view>
+    </picker>
+    <picker mode="selector" range="{{timeRanges}}" value="{{timeIndex}}" bindchange="onTimeChange">
+      <view class="filter-item">{{timeRanges[timeIndex] || '时间筛选'}} ▼</view>
+    </picker>
+  </view>
+
+  <view wx:if="{{groupedTransactions.length > 0}}">
+    <view wx:for="{{groupedTransactions}}" wx:key="dateGroup" class="date-group">
+      <view class="date-header">{{item.dateGroup}}</view>
+      <view class="transaction-card" wx:for="{{item.transactions}}" wx:key="_id">
+        <view class="transaction-header">
+          <view class="transaction-type {{item.type === 'buy' ? 'buy' : 'sell'}}">
+            {{item.type === 'buy' ? '🟢 买入' : '🔴 卖出'}}
+          </view>
+          <view class="transaction-asset">
+            <text class="asset-name">{{item.assetName}}</text>
+            <text class="asset-code">{{item.assetCode}}</text>
+          </view>
+        </view>
+        <view class="transaction-body">
+          <text class="transaction-detail">{{item.shares}}股 @ {{item.price}}</text>
+          <text class="transaction-fee">手续费 ¥{{item.fee || 0}}</text>
+        </view>
+        <view class="transaction-footer">
+          <text class="transaction-total">总计：¥{{item.totalDisplay}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="empty-state">
+    <text class="empty-text">暂无交易记录</text>
+  </view>
+
+  <view class="fab-btn" bindtap="goToAddTransaction">
+    <text class="fab-icon">+</text>
+  </view>
+</view>

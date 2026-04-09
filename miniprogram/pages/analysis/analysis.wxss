@@ -1,0 +1,76 @@
+.time-tabs {
+  display: flex;
+  background: #fff;
+  padding: 20rpx 30rpx;
+}
+
+.time-tab {
+  flex: 1;
+  text-align: center;
+  padding: 15rpx 0;
+  font-size: 26rpx;
+  color: #666;
+  border-radius: 20rpx;
+}
+
+.time-tab.active {
+  background: #E8F0FE;
+  color: #1A73E8;
+  font-weight: bold;
+}
+
+.card-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30rpx;
+}
+
+.analysis-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.analysis-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 10rpx;
+}
+
+.analysis-value {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.analysis-value.best {
+  color: #E64340;
+}
+
+.analysis-value.worst {
+  color: #00A650;
+}
+
+.up { color: #E64340; }
+.down { color: #00A650; }
+
+.risk-card {
+  background: #FFF3E0;
+  border: 1rpx solid #FFB74D;
+}
+
+.risk-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #FF9800;
+  margin-bottom: 10rpx;
+}
+
+.risk-text {
+  font-size: 26rpx;
+  color: #666;
+}

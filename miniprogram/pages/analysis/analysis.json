@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "资产分析",
+  "usingComponents": {
+    "chart-view": "/components/chart-view/chart-view"
+  }
+}

@@ -1,0 +1,71 @@
+<view class="holding-card" bindtap="onCardTap">
+  <view class="card-header">
+    <view class="asset-info">
+      <view class="asset-tag {{assetInfo.tagClass}}">{{assetInfo.label}}</view>
+      <text class="asset-name">{{data.assetName}}</text>
+      <text class="asset-code">- {{data.assetCode}}</text>
+    </view>
+    <view class="update-tag">更新</view>
+  </view>
+
+  <view class="card-main">
+    <view class="main-left">
+      <text class="main-label">总金额 {{updateTime}}</text>
+      <text class="main-value">{{marketValueDisplay}}</text>
+    </view>
+    <view class="main-right">
+      <text class="main-label">今日收益</text>
+      <view class="profit-row">
+        <text class="profit-value {{data.todayProfit >= 0 ? 'up' : 'down'}}">
+          {{data.todayProfit > 0 ? '+' : ''}}{{todayProfitDisplay}}
+        </text>
+        <text class="profit-rate {{data.todayRate >= 0 ? 'up' : 'down'}}">
+          {{data.todayRate > 0 ? '+' : ''}}{{todayRateDisplay}}%
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card-detail">
+    <view class="detail-item">
+      <text class="detail-label">持仓成本</text>
+      <text class="detail-value">¥{{costAmountDisplay}}</text>
+    </view>
+    <view class="detail-item">
+      <text class="detail-label">{{costPriceLabel}}</text>
+      <text class="detail-value">{{costPriceDisplay}}</text>
+    </view>
+    <view class="detail-item">
+      <text class="detail-label">{{sharesLabel}}</text>
+      <text class="detail-value">{{sharesDisplay}}</text>
+    </view>
+    <view class="detail-item">
+      <text class="detail-label">总盈亏</text>
+      <view>
+        <text class="detail-value {{data.profit >= 0 ? 'up' : 'down'}}">
+          {{data.profit > 0 ? '+' : ''}}{{profitDisplay}}
+        </text>
+        <text class="detail-rate {{data.profitRate >= 0 ? 'up' : 'down'}}">
+          {{data.profitRate > 0 ? '+' : ''}}{{profitRateDisplay}}%
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{data.assetType === 'fund'}}" class="extra-info">
+    <text>净值更新：{{fundUpdateTime}}</text>
+    <text wx:if="{{data.fundEstimate}}" class="margin-left">估值：{{data.fundEstimate > 0 ? '+' : ''}}{{fundEstimateRate}}%</text>
+  </view>
+
+  <view wx:if="{{data.assetType === 'gold'}}" class="extra-info">
+    <text>类型：{{goldTypeDisplay}}</text>
+    <text class="margin-left">单位：元/克</text>
+  </view>
+
+  <view class="profit-bar">
+    <view 
+      class="profit-bar-fill {{data.profit >= 0 ? 'up' : 'down'}}" 
+      style="width: {{profitPercent}}%"
+    ></view>
+  </view>
+</view>

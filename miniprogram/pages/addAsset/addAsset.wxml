@@ -1,0 +1,38 @@
+<view class="container">
+  <view class="section-title">选择资产类型</view>
+  <asset-selector 
+    id="assetSelector"
+    assetType="{{assetType}}"
+    bind:change="onAssetTypeChange"
+    bind:search="onSearch"
+    bind:select="onAssetSelect"
+  />
+
+  <view class="section-title">持仓信息</view>
+  <view class="form-card">
+    <view class="form-item">
+      <text class="form-label">资产名称</text>
+      <input class="form-input" placeholder="资产名称" value="{{formData.assetName}}" disabled="{{autoFilled}}" bindinput="onNameInput" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">资产代码</text>
+      <input class="form-input" placeholder="资产代码" value="{{formData.assetCode}}" disabled="{{autoFilled}}" bindinput="onCodeInput" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">{{assetType === 'gold' ? '持有克数' : '持有份额'}}</text>
+      <input class="form-input" type="digit" placeholder="{{assetType === 'gold' ? '输入克数' : '输入份额'}}" value="{{formData.shares}}" bindinput="onSharesInput" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">成本价（元）</text>
+      <input class="form-input" type="digit" placeholder="输入成本价" value="{{formData.costPrice}}" bindinput="onPriceInput" />
+    </view>
+    <view class="form-item readonly">
+      <text class="form-label">持仓成本</text>
+      <text class="form-value">¥{{costAmountDisplay}}（自动计算）</text>
+    </view>
+  </view>
+
+  <view class="submit-btn-wrapper">
+    <button class="btn-primary" bindtap="submitHolding">确认添加</button>
+  </view>
+</view>

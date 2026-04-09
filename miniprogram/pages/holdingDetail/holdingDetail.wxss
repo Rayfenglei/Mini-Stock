@@ -1,0 +1,167 @@
+.holding-header {
+  padding: 30rpx;
+  background: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.asset-title {
+  display: flex;
+  align-items: center;
+}
+
+.asset-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-left: 10rpx;
+}
+
+.asset-code {
+  font-size: 28rpx;
+  color: #999;
+  margin-left: 10rpx;
+}
+
+.current-price {
+  text-align: right;
+}
+
+.current-price text {
+  display: block;
+}
+
+.current-price text:first-child {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.current-price text:last-child {
+  font-size: 24rpx;
+}
+
+.up { color: #E64340; }
+.down { color: #00A650; }
+
+.card-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15rpx 0;
+}
+
+.info-label {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.info-value {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.divider {
+  height: 1rpx;
+  background: #eee;
+  margin: 10rpx 0;
+}
+
+.profit-bar {
+  height: 8rpx;
+  background: #f0f0f0;
+  border-radius: 4rpx;
+  overflow: hidden;
+  margin-top: 20rpx;
+}
+
+.profit-bar-fill {
+  height: 100%;
+  border-radius: 4rpx;
+}
+
+.profit-bar-fill.up { background: #E64340; }
+.profit-bar-fill.down { background: #00A650; }
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  padding: 30rpx 30rpx 20rpx;
+}
+
+.transaction-item {
+  margin: 0 20rpx 10rpx;
+  padding: 20rpx 30rpx;
+  background: #fff;
+  border-radius: 12rpx;
+}
+
+.transaction-date {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 10rpx;
+}
+
+.transaction-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.transaction-type {
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.transaction-type.buy { color: #E64340; }
+.transaction-type.sell { color: #00A650; }
+
+.transaction-detail {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.empty-transactions {
+  text-align: center;
+  padding: 60rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.action-btns {
+  display: flex;
+  gap: 20rpx;
+  padding: 30rpx;
+  padding-bottom: 60rpx;
+}
+
+.action-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  border: none;
+}
+
+.action-btn::after {
+  border: none;
+}
+
+.action-btn.edit {
+  background: #1A73E8;
+  color: #fff;
+}
+
+.action-btn.add {
+  background: #81C784;
+  color: #fff;
+}

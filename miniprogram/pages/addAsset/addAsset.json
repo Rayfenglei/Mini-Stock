@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "添加资产",
+  "usingComponents": {
+    "asset-selector": "/components/asset-selector/asset-selector"
+  }
+}

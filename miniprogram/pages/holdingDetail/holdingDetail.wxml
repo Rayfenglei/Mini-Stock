@@ -1,0 +1,102 @@
+<view class="container">
+  <view class="holding-header">
+    <view class="asset-title">
+      <view class="asset-tag {{assetInfo.tagClass}}">{{assetInfo.label}}</view>
+      <text class="asset-name">{{holding.assetName}}</text>
+      <text class="asset-code">{{holding.assetCode}}</text>
+    </view>
+    <view class="current-price {{holding.todayRate >= 0 ? 'up' : 'down'}}">
+      <text>{{holding.currentPrice}}</text>
+      <text>{{holding.todayRate > 0 ? '+' : ''}}{{holding.todayRate}}%</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">持仓信息</view>
+    <view class="info-row">
+      <text class="info-label">{{sharesLabel}}</text>
+      <text class="info-value">{{sharesDisplay}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">{{costPriceLabel}}</text>
+      <text class="info-value">{{holding.costPrice}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">持仓成本</text>
+      <text class="info-value">¥{{costAmountDisplay}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">当前市值</text>
+      <text class="info-value">¥{{marketValueDisplay}}</text>
+    </view>
+    <view class="divider"></view>
+    <view class="info-row">
+      <text class="info-label">总盈亏</text>
+      <text class="info-value {{holding.profit >= 0 ? 'up' : 'down'}}">
+        {{holding.profit > 0 ? '+' : ''}}{{profitDisplay}}
+      </text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">总收益率</text>
+      <text class="info-value {{holding.profitRate >= 0 ? 'up' : 'down'}}">
+        {{holding.profitRate > 0 ? '+' : ''}}{{holding.profitRate}}%
+      </text>
+    </view>
+    <view class="profit-bar">
+      <view class="profit-bar-fill {{holding.profit >= 0 ? 'up' : 'down'}}" style="width: {{profitPercent}}%"></view>
+    </view>
+  </view>
+
+  <view wx:if="{{holding.assetType === 'stock'}}" class="card">
+    <view class="card-title">今日行情</view>
+    <view class="info-row">
+      <text class="info-label">今日收益</text>
+      <text class="info-value {{holding.todayProfit >= 0 ? 'up' : 'down'}}">
+        {{holding.todayProfit > 0 ? '+' : ''}}{{holding.todayProfit}}
+      </text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">今日涨跌幅</text>
+      <text class="info-value {{holding.todayRate >= 0 ? 'up' : 'down'}}">
+        {{holding.todayRate > 0 ? '+' : ''}}{{holding.todayRate}}%
+      </text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">昨收</text>
+      <text class="info-value">{{holding.preClose || '-'}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">今开</text>
+      <text class="info-value">{{holding.open || '-'}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">最高</text>
+      <text class="info-value">{{holding.high || '-'}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">最低</text>
+      <text class="info-value">{{holding.low || '-'}}</text>
+    </view>
+  </view>
+
+  <view class="section-title">交易记录</view>
+  <view wx:if="{{transactions.length > 0}}">
+    <view class="transaction-item" wx:for="{{transactions}}" wx:key="_id">
+      <view class="transaction-date">{{item.tradeDateDisplay}}</view>
+      <view class="transaction-info">
+        <text class="transaction-type {{item.type === 'buy' ? 'buy' : 'sell'}}">
+          {{item.type === 'buy' ? '买入' : '卖出'}}
+        </text>
+        <text class="transaction-detail">{{item.shares}}股 @{{item.price}}</text>
+      </view>
+    </view>
+  </view>
+  <view wx:else class="empty-transactions">
+    <text class="empty-text">暂无交易记录</text>
+  </view>
+
+  <view class="action-btns">
+    <button class="action-btn edit" bindtap="editHolding">编辑持仓</button>
+    <button class="action-btn add" bindtap="addTransaction">添加交易</button>
+  </view>
+</view>

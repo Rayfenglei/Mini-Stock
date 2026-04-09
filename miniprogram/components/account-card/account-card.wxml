@@ -1,0 +1,22 @@
+<view class="account-card" bindtap="onCardTap">
+  <view class="card-header">
+    <view class="account-info">
+      <text class="account-name">{{data.name}}</text>
+      <text class="account-code">{{data.broker}} {{data.accountCode}}</text>
+    </view>
+    <view class="arrow">></view>
+  </view>
+  <view class="card-body">
+    <view class="total-amount-label">总金额</view>
+    <view class="total-amount">¥{{totalAmountDisplay}}</view>
+    <view class="today-profit">
+      <text>今日收益：</text>
+      <text class="{{data.todayProfit >= 0 ? 'up' : 'down'}}">
+        {{data.todayProfit > 0 ? '+' : ''}}{{todayProfitDisplay}}
+      </text>
+      <text class="{{data.todayRate >= 0 ? 'up' : 'down'}} margin-left">
+        {{data.todayRate > 0 ? '+' : ''}}{{todayRateDisplay}}%
+      </text>
+    </view>
+  </view>
+</view>

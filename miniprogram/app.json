@@ -1,0 +1,45 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/assetDetail/assetDetail",
+    "pages/addAsset/addAsset",
+    "pages/holdingDetail/holdingDetail",
+    "pages/transaction/transaction",
+    "pages/analysis/analysis",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#1A73E8",
+    "navigationBarTitleText": "股票资产管家",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "color": "#9AA0A6",
+    "selectedColor": "#1A73E8",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/icons/home.png",
+        "selectedIconPath": "assets/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/analysis/analysis",
+        "text": "分析",
+        "iconPath": "assets/icons/analysis.png",
+        "selectedIconPath": "assets/icons/analysis-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "assets/icons/profile.png",
+        "selectedIconPath": "assets/icons/profile-active.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "usingComponents": {}
+}

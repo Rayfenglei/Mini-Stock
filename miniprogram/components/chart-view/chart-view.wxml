@@ -1,0 +1,13 @@
+<view class="chart-view">
+  <canvas 
+    canvas-id="chartCanvas" 
+    class="chart-canvas" 
+    style="height: {{height}}px;"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+  ></canvas>
+  <view wx:if="{{!data || data.length === 0}}" class="empty-chart">
+    <text class="empty-text">暂无数据</text>
+  </view>
+</view>

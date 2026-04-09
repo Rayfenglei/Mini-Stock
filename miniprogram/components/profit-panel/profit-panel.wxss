@@ -1,0 +1,59 @@
+.profit-panel {
+  margin: 20rpx;
+  padding: 40rpx 30rpx;
+  background: #fff;
+  border-radius: 20rpx;
+}
+
+.panel-header {
+  margin-bottom: 20rpx;
+}
+
+.label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.profit-row {
+  display: flex;
+  align-items: baseline;
+  margin: 20rpx 0;
+}
+
+.profit-value {
+  font-size: 72rpx;
+  font-weight: bold;
+  margin-right: 20rpx;
+}
+
+.profit-rate {
+  font-size: 32rpx;
+}
+
+.up { color: #E64340; }
+.down { color: #00A650; }
+
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20rpx;
+  margin-top: 40rpx;
+  padding-top: 40rpx;
+  border-top: 1rpx solid #eee;
+}
+
+.data-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.data-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 10rpx;
+}
+
+.data-value {
+  font-size: 28rpx;
+  font-weight: bold;
+}

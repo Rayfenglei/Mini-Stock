@@ -1,0 +1,20 @@
+.chart-view {
+  width: 100%;
+  position: relative;
+}
+
+.chart-canvas {
+  width: 100%;
+}
+
+.empty-chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}

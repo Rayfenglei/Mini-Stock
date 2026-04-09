@@ -1,0 +1,46 @@
+<view class="container">
+  <view class="account-selector" bindtap="showAccountPicker">
+    <view class="account-info">
+      <text class="account-name">{{currentAccount.name}}</text>
+      <text class="account-code">{{currentAccount.broker}} {{currentAccount.accountCode}}</text>
+    </view>
+    <view class="edit-btn" bindtap="editAccount">编辑</view>
+  </view>
+
+  <profit-panel
+    todayProfit="{{todayProfit}}"
+    todayRate="{{todayRate}}"
+    totalProfit="{{totalProfit}}"
+    totalProfitRate="{{totalProfitRate}}"
+    totalAmount="{{totalAmount}}"
+    costAmount="{{costAmount}}"
+  />
+
+  <view class="holdings-section">
+    <view class="section-header">
+      <text class="section-title">我的持有</text>
+      <view class="sort-btn" bindtap="toggleSort">
+        <text>金额排序</text>
+        <text class="sort-icon">{{sortAsc ? '↑' : '↓'}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{holdings.length > 0}}" class="holdings-list">
+      <holding-card 
+        wx:for="{{holdings}}" 
+        wx:key="_id"
+        data="{{item}}"
+        bind:tap="onHoldingTap"
+      />
+    </view>
+
+    <view wx:else class="empty-holdings">
+      <text class="empty-text">暂无持仓</text>
+      <text class="empty-desc">点击下方按钮添加第一笔资产</text>
+    </view>
+  </view>
+
+  <view class="add-btn-wrapper">
+    <button class="btn-success" bindtap="goToAddAsset">添加</button>
+  </view>
+</view>

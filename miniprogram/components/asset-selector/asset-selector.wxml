@@ -1,0 +1,65 @@
+<view class="asset-selector">
+  <view class="type-tabs">
+    <view 
+      class="tab {{currentType === 'stock' ? 'active' : ''}}" 
+      bindtap="onTypeChange" 
+      data-type="stock"
+    >
+      📈 股票
+    </view>
+    <view 
+      class="tab {{currentType === 'fund' ? 'active' : ''}}" 
+      bindtap="onTypeChange" 
+      data-type="fund"
+    >
+      💰 基金
+    </view>
+    <view 
+      class="tab {{currentType === 'gold' ? 'active' : ''}}" 
+      bindtap="onTypeChange" 
+      data-type="gold"
+    >
+      🥇 黄金
+    </view>
+  </view>
+
+  <view wx:if="{{currentType !== 'gold'}}" class="search-box">
+    <input 
+      class="search-input" 
+      placeholder="输入{{currentType === 'stock' ? '股票' : '基金'}}名称或代码" 
+      value="{{searchKeyword}}"
+      bindinput="onSearchInput"
+      bindconfirm="onSearch"
+    />
+  </view>
+
+  <view wx:if="{{searchResults.length > 0}}" class="search-results">
+    <view 
+      class="result-item" 
+      wx:for="{{searchResults}}" 
+      wx:key="code"
+      bindtap="onSelect"
+      data-item="{{item}}"
+    >
+      <text class="result-name">{{item.name}}</text>
+      <text class="result-code">{{item.code}}</text>
+      <text class="result-price {{item.change >= 0 ? 'up' : 'down'}}">
+        {{item.price}} {{item.change > 0 ? '+' : ''}}{{item.change}}%
+      </text>
+    </view>
+  </view>
+
+  <view wx:if="{{currentType === 'gold'}}" class="gold-list">
+    <view 
+      class="result-item" 
+      wx:for="{{goldOptions}}" 
+      wx:key="code"
+      bindtap="onSelect"
+      data-item="{{item}}"
+    >
+      <text class="result-name">{{item.name}}</text>
+      <text class="result-code">{{item.type}}</text>
+      <text class="result-price">¥{{item.price}}/{{item.unit}}</text>
+    </view>
+  </view>
+</view>

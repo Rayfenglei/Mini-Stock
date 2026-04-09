@@ -1,0 +1,36 @@
+<view class="profit-panel">
+  <view class="panel-header">
+    <text class="label">今日收益（元）</text>
+  </view>
+  <view class="profit-row">
+    <text class="profit-value {{todayProfit >= 0 ? 'up' : 'down'}}">
+      {{todayProfit > 0 ? '+' : ''}}{{todayProfitDisplay}}
+    </text>
+    <text class="profit-rate {{todayRate >= 0 ? 'up' : 'down'}}">
+      {{todayRate > 0 ? '+' : ''}}{{todayRateDisplay}}%
+    </text>
+  </view>
+  
+  <view class="data-grid">
+    <view class="data-item">
+      <text class="data-label">总收益</text>
+      <text class="data-value {{totalProfit >= 0 ? 'up' : 'down'}}">
+        {{totalProfit > 0 ? '+' : ''}}{{totalProfitDisplay}}
+      </text>
+    </view>
+    <view class="data-item">
+      <text class="data-label">总收益率</text>
+      <text class="data-value {{totalProfitRate >= 0 ? 'up' : 'down'}}">
+        {{totalProfitRate > 0 ? '+' : ''}}{{totalProfitRateDisplay}}%
+      </text>
+    </view>
+    <view class="data-item">
+      <text class="data-label">总金额</text>
+      <text class="data-value">{{totalAmountDisplay}}</text>
+    </view>
+    <view class="data-item">
+      <text class="data-label">持仓金额</text>
+      <text class="data-value">{{costAmountDisplay}}</text>
+    </view>
+  </view>
+</view>

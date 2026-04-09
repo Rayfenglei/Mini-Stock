@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "资产详情",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "profit-panel": "/components/profit-panel/profit-panel",
+    "holding-card": "/components/holding-card/holding-card"
+  }
+}

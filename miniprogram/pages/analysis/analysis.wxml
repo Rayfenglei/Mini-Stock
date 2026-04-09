@@ -1,0 +1,60 @@
+<view class="container">
+  <view class="time-tabs">
+    <view 
+      class="time-tab {{timeIndex === index ? 'active' : ''}}" 
+      wx:for="{{timeRanges}}" 
+      wx:key="*this"
+      bindtap="onTimeChange"
+      data-index="{{index}}"
+    >
+      {{item}}
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">总资产趋势</view>
+    <chart-view type="line" data="{{trendData}}" height="250" />
+  </view>
+
+  <view class="card">
+    <view class="card-title">持仓分布</view>
+    <chart-view type="pie" data="{{distributionData}}" height="300" />
+  </view>
+
+  <view class="card">
+    <view class="card-title">收益分析</view>
+    <view class="analysis-grid">
+      <view class="analysis-item">
+        <text class="analysis-label">总收益</text>
+        <text class="analysis-value {{totalProfit >= 0 ? 'up' : 'down'}}">
+          {{totalProfit > 0 ? '+' : ''}}{{totalProfitDisplay}}
+        </text>
+      </view>
+      <view class="analysis-item">
+        <text class="analysis-label">总收益率</text>
+        <text class="analysis-value {{totalProfitRate >= 0 ? 'up' : 'down'}}">
+          {{totalProfitRate > 0 ? '+' : ''}}{{totalProfitRateDisplay}}%
+        </text>
+      </view>
+      <view class="analysis-item">
+        <text class="analysis-label">今日收益</text>
+        <text class="analysis-value {{todayProfit >= 0 ? 'up' : 'down'}}">
+          {{todayProfit > 0 ? '+' : ''}}{{todayProfitDisplay}}
+        </text>
+      </view>
+      <view class="analysis-item">
+        <text class="analysis-label">最佳持仓</text>
+        <text class="analysis-value best">{{bestHolding}}</text>
+      </view>
+      <view class="analysis-item">
+        <text class="analysis-label">最差持仓</text>
+        <text class="analysis-value worst">{{worstHolding}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{riskWarning}}" class="card risk-card">
+    <view class="risk-title">⚠️ 风险提示</view>
+    <text class="risk-text">{{riskWarning}}</text>
+  </view>
+</view>

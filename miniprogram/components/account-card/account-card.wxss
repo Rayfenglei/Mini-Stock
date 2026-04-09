@@ -1,0 +1,63 @@
+.account-card {
+  margin: 20rpx;
+  padding: 30rpx;
+  background: #fff;
+  border-radius: 16rpx;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.account-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  display: block;
+}
+
+.account-code {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.arrow {
+  font-size: 32rpx;
+  color: #ccc;
+}
+
+.card-body {
+  padding-top: 20rpx;
+}
+
+.total-amount-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 10rpx;
+}
+
+.total-amount {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.today-profit {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.margin-left {
+  margin-left: 10rpx;
+}
+
+.up {
+  color: #E64340;
+}
+
+.down {
+  color: #00A650;
+}

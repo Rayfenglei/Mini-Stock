@@ -1,0 +1,59 @@
+<view class="container">
+  <view class="total-assets-card">
+    <view class="assets-header">
+      <text class="assets-title">总资产概览</text>
+    </view>
+    <view class="assets-body">
+      <view class="assets-item">
+        <text class="assets-label">总投入</text>
+        <text class="assets-value">¥{{totalInvestmentDisplay}}</text>
+      </view>
+      <view class="assets-divider"></view>
+      <view class="assets-item">
+        <text class="assets-label">总盈亏</text>
+        <text class="assets-value {{totalProfit >= 0 ? 'profit' : 'loss'}}">
+          {{totalProfit >= 0 ? '+' : ''}}¥{{totalProfitDisplay}}
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <view class="add-asset-btn-wrapper">
+    <view class="add-asset-btn" bindtap="onAddAssetTap">
+      <view class="add-icon">+</view>
+      <text class="add-text">添加资产</text>
+    </view>
+  </view>
+
+  <view class="recent-holdings" wx:if="{{recentHoldings.length > 0}}">
+    <view class="section-title">最近添加</view>
+    <view class="holding-card" wx:for="{{recentHoldings}}" wx:key="_id" bindtap="onHoldingTap" data-id="{{item._id}}">
+      <view class="holding-header">
+        <view class="holding-info">
+          <text class="holding-name">{{item.assetName}}</text>
+          <text class="holding-code">{{item.assetCode}}</text>
+        </view>
+        <view class="holding-type {{item.assetType}}">{{item.assetTypeText}}</view>
+      </view>
+      <view class="holding-body">
+        <view class="holding-item">
+          <text class="holding-label">持有份额</text>
+          <text class="holding-value">{{item.sharesDisplay}}</text>
+        </view>
+        <view class="holding-item">
+          <text class="holding-label">成本价</text>
+          <text class="holding-value">¥{{item.costPriceDisplay}}</text>
+        </view>
+        <view class="holding-item">
+          <text class="holding-label">持仓成本</text>
+          <text class="holding-value">¥{{item.costAmountDisplay}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="empty-state">
+    <text class="empty-text">暂无持仓记录</text>
+    <text class="empty-desc">点击上方按钮添加您的第一个金融资产</text>
+  </view>
+</view>
