@@ -14,17 +14,22 @@ module.exports = {
 
   getHoldings: (accountId, refresh = false) =>
     callFunction('getHoldings', { accountId, refresh }),
+  getHoldingById: (id) => callFunction('getHoldingById', { id }),
   addHolding: (data) => callFunction('addHolding', data),
   updateHolding: (id, data) => callFunction('updateHolding', { id, ...data }),
   deleteHolding: (id) => callFunction('deleteHolding', { id }),
 
   getTransactions: (accountId) =>
     callFunction('getTransactions', { accountId }),
+  getTransactionsByHolding: (holdingId) =>
+    callFunction('getTransactionsByHolding', { holdingId }),
   addTransaction: (data) => callFunction('addTransaction', data),
 
   getStockQuote: (code) => callFunction('getStockQuote', { code }),
   getFundQuote: (code) => callFunction('getFundQuote', { code }),
   getGoldQuote: (code) => callFunction('getGoldQuote', { code }),
+
+  getBatchQuotes: (codes) => callFunction('getBatchQuotes', { codes }),
 
   httpRequest: (url, method = 'GET') =>
     callFunction('httpRequest', { url, method })

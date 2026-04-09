@@ -1,0 +1,9 @@
+{
+  "name": "getBatchQuotes",
+  "version": "1.0.0",
+  "description": "批量获取股票行情",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

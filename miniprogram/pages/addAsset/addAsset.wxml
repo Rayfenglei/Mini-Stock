@@ -17,6 +17,7 @@
     <view class="form-item">
       <text class="form-label">资产代码</text>
       <input class="form-input" placeholder="资产代码" value="{{formData.assetCode}}" disabled="{{autoFilled}}" bindinput="onCodeInput" />
+      <text class="form-hint">需添加市场前缀：沪市sh / 深市sz / 北交所bj，如 sh600000</text>
     </view>
     <view class="form-item">
       <text class="form-label">{{assetType === 'gold' ? '持有克数' : '持有份额'}}</text>

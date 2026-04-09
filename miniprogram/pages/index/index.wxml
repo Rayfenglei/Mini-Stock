@@ -26,27 +26,78 @@
   </view>
 
   <view class="recent-holdings" wx:if="{{recentHoldings.length > 0}}">
-    <view class="section-title">最近添加</view>
-    <view class="holding-card" wx:for="{{recentHoldings}}" wx:key="_id" bindtap="onHoldingTap" data-id="{{item._id}}">
-      <view class="holding-header">
-        <view class="holding-info">
-          <text class="holding-name">{{item.assetName}}</text>
-          <text class="holding-code">{{item.assetCode}}</text>
-        </view>
-        <view class="holding-type {{item.assetType}}">{{item.assetTypeText}}</view>
+    <view class="section-header">
+      <text class="section-title">我的持有</text>
+      <view class="sort-btn">
+        <text class="sort-text">金额排序</text>
       </view>
-      <view class="holding-body">
-        <view class="holding-item">
-          <text class="holding-label">持有份额</text>
-          <text class="holding-value">{{item.sharesDisplay}}</text>
-        </view>
-        <view class="holding-item">
-          <text class="holding-label">成本价</text>
-          <text class="holding-value">¥{{item.costPriceDisplay}}</text>
-        </view>
-        <view class="holding-item">
-          <text class="holding-label">持仓成本</text>
-          <text class="holding-value">¥{{item.costAmountDisplay}}</text>
+    </view>
+    <view class="holding-card-wrapper" wx:for="{{recentHoldings}}" wx:key="_id" bindtap="onWrapperTap" data-index="{{index}}">
+      <view class="delete-btn" bindtap="onDeleteTap" data-id="{{item._id}}" data-index="{{index}}">
+        <text class="delete-text">删除</text>
+      </view>
+      <view class="holding-card {{item.animating ? 'animating' : ''}}" 
+            style="transform: translateX({{item.translateX || 0}}px)"
+            bindtouchstart="onTouchStart" 
+            bindtouchmove="onTouchMove" 
+            bindtouchend="onTouchEnd"
+            catchtap="onCardTap"
+            data-index="{{index}}"
+            data-id="{{item._id}}">
+        <view class="card-accent-bar" style="background: {{item.profit >= 0 ? 'linear-gradient(135deg, #52c41a 0%, #73d13d 100%)' : 'linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%)'}}"></view>
+        <view class="holding-content">
+          <view class="card-header">
+            <view class="asset-identity">
+              <text class="asset-name">{{item.assetName}}</text>
+              <text class="asset-code">{{item.assetCode}}</text>
+            </view>
+            <view class="update-badge">
+              <text class="update-text">今日收益更新</text>
+            </view>
+          </view>
+          
+          <view class="main-metrics">
+            <view class="metric-group">
+              <text class="metric-label">总金额</text>
+              <text class="metric-value primary {{item.profit >= 0 ? 'profit' : 'loss'}}">¥{{item.marketValueDisplay}}</text>
+            </view>
+            <view class="metric-group today-profit">
+              <text class="metric-label">今日收益（元）</text>
+              <view class="today-profit-value">
+                <text class="metric-value {{item.todayProfit >= 0 ? 'profit' : 'loss'}}">{{item.todayProfit >= 0 ? '+' : ''}}¥{{item.todayProfitDisplay}}</text>
+                <text class="metric-rate {{item.todayProfitRate >= 0 ? 'profit' : 'loss'}}">{{item.todayProfitRate >= 0 ? '+' : ''}}{{item.todayProfitRateDisplay}}%</text>
+              </view>
+            </view>
+          </view>
+          
+          <view class="divider-dotted"></view>
+          
+          <view class="detail-metrics">
+            <view class="detail-item">
+              <text class="detail-label">持仓成本</text>
+              <text class="detail-value">¥{{item.costAmountDisplay}}</text>
+              <view class="profit-bar">
+                <view class="profit-bar-fill" style="width: {{item.profitBarWidth}}%; background: {{item.profit >= 0 ? '#52c41a' : '#ff4d4f'}}"></view>
+              </view>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">成本价</text>
+              <text class="detail-value">{{item.costPriceDisplay}}</text>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">现价</text>
+              <text class="detail-value">{{item.currentPriceDisplay}}</text>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">持有份额</text>
+              <text class="detail-value">{{item.sharesDisplay}}</text>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">总盈亏</text>
+              <text class="detail-value {{item.profit >= 0 ? 'profit' : 'loss'}}">{{item.profit >= 0 ? '+' : ''}}¥{{item.profitDisplay}}</text>
+              <text class="detail-rate {{item.profitRate >= 0 ? 'profit' : 'loss'}}">{{item.profitRate >= 0 ? '+' : ''}}{{item.profitRateDisplay}}%</text>
+            </view>
+          </view>
         </view>
       </view>
     </view>

@@ -46,12 +46,16 @@ Page({
 
   async searchStock(keyword) {
     try {
-      const prefix = keyword.startsWith('6') ? 'sh' : 'sz';
-      const result = await api.getStockQuote(prefix + keyword);
+      let codeWithPrefix = keyword;
+      if (!/^(sh|sz|bj)/i.test(keyword)) {
+        const prefix = keyword.startsWith('6') || keyword.startsWith('8') || keyword.startsWith('4') ? 'sh' : 'sz';
+        codeWithPrefix = prefix + keyword;
+      }
+      const result = await api.getStockQuote(codeWithPrefix);
       if (result) {
         const selector = this.selectComponent('#assetSelector');
         selector.updateResults([{
-          code: keyword,
+          code: codeWithPrefix,
           name: result.name,
           price: result.currentPrice,
           change: result.changePercent

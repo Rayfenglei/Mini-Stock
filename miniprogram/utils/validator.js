@@ -1,9 +1,9 @@
 const isValidStockCode = (code) => {
-  return /^\d{6}$/.test(code);
+  return /^(sh|sz|bj)\d{6}$/i.test(code);
 };
 
 const isValidFundCode = (code) => {
-  return /^\d{6}$/.test(code);
+  return /^(sh|sz)\d{6}$/i.test(code);
 };
 
 const isValidGoldCode = (code) => {
