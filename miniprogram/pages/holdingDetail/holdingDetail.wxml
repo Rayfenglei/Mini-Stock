@@ -11,41 +11,7 @@
     </view>
   </view>
 
-  <view class="card">
-    <view class="card-title">持仓信息</view>
-    <view class="info-row">
-      <text class="info-label">{{sharesLabel}}</text>
-      <text class="info-value">{{sharesDisplay}}</text>
-    </view>
-    <view class="info-row">
-      <text class="info-label">{{costPriceLabel}}</text>
-      <text class="info-value">{{holding.costPrice}}</text>
-    </view>
-    <view class="info-row">
-      <text class="info-label">持仓成本</text>
-      <text class="info-value">¥{{costAmountDisplay}}</text>
-    </view>
-    <view class="info-row">
-      <text class="info-label">当前市值</text>
-      <text class="info-value">¥{{marketValueDisplay}}</text>
-    </view>
-    <view class="divider"></view>
-    <view class="info-row">
-      <text class="info-label">总盈亏</text>
-      <text class="info-value {{holding.profit >= 0 ? 'up' : 'down'}}">
-        {{holding.profit > 0 ? '+' : ''}}{{profitDisplay}}
-      </text>
-    </view>
-    <view class="info-row">
-      <text class="info-label">总收益率</text>
-      <text class="info-value {{holding.profitRate >= 0 ? 'up' : 'down'}}">
-        {{holding.profitRate > 0 ? '+' : ''}}{{holding.profitRate}}%
-      </text>
-    </view>
-    <view class="profit-bar">
-      <view class="profit-bar-fill {{holding.profit >= 0 ? 'up' : 'down'}}" style="width: {{profitPercent}}%"></view>
-    </view>
-  </view>
+
 
   <view wx:if="{{holding.assetType === 'stock'}}" class="card">
     <view class="card-title">今日行情</view>

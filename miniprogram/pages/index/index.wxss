@@ -41,11 +41,11 @@
 }
 
 .assets-value.profit {
-  color: #52c41a;
+  color: #E64340;
 }
 
 .assets-value.loss {
-  color: #ff4d4f;
+  color: #00A650;
 }
 
 .assets-divider {
@@ -231,11 +231,11 @@
 }
 
 .metric-value.profit {
-  color: #52c41a;
+  color: #E64340;
 }
 
 .metric-value.loss {
-  color: #ff4d4f;
+  color: #00A650;
 }
 
 .today-profit {
@@ -254,11 +254,11 @@
 }
 
 .metric-rate.profit {
-  color: #52c41a;
+  color: #E64340;
 }
 
 .metric-rate.loss {
-  color: #ff4d4f;
+  color: #00A650;
 }
 
 .divider-dotted {
@@ -301,11 +301,11 @@
 }
 
 .detail-value.profit {
-  color: #52c41a;
+  color: #E64340;
 }
 
 .detail-value.loss {
-  color: #ff4d4f;
+  color: #00A650;
 }
 
 .detail-rate {
@@ -314,11 +314,11 @@
 }
 
 .detail-rate.profit {
-  color: #52c41a;
+  color: #E64340;
 }
 
 .detail-rate.loss {
-  color: #ff4d4f;
+  color: #00A650;
 }
 
 .profit-bar {

@@ -21,8 +21,7 @@ module.exports = {
 
   getTransactions: (accountId) =>
     callFunction('getTransactions', { accountId }),
-  getTransactionsByHolding: (holdingId) =>
-    callFunction('getTransactionsByHolding', { holdingId }),
+  getTransactionsByHolding: (id) => callFunction('getTransactionsByHolding', { holdingId: id }),
   addTransaction: (data) => callFunction('addTransaction', data),
 
   getStockQuote: (code) => callFunction('getStockQuote', { code }),

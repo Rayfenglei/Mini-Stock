@@ -40,7 +40,7 @@ exports.main = async (event, context) => {
     const data = {};
     const lines = rawData.split(';');
     
-    lines.forEach((line, idx) => {
+    lines.forEach((line) => {
       if (!line.trim()) return;
       
       const match = line.match(/v_(\w+)="([^"]*)"/);
@@ -59,9 +59,7 @@ exports.main = async (event, context) => {
       const low = parseFloat(values[34]) || 0;
       const changePercent = parseFloat(values[32]) || 0;
       
-      const originalCode = codeParams[idx] || fullCode;
-      
-      data[originalCode] = {
+      const quoteData = {
         name,
         currentPrice,
         preClose,
@@ -70,6 +68,11 @@ exports.main = async (event, context) => {
         low,
         changePercent
       };
+      
+      data[fullCode] = quoteData;
+      
+      const codeWithoutPrefix = fullCode.replace(/^(sh|sz|bj)/i, '');
+      data[codeWithoutPrefix] = quoteData;
     });
     
     return { code: 0, data };

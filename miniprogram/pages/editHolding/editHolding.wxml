@@ -1,0 +1,25 @@
+<view class="container">
+  <view class="form-card">
+    <view class="form-item">
+      <text class="form-label">持仓数量</text>
+      <input class="form-input" type="number" value="{{formData.shares}}" bindinput="onSharesChange" placeholder="请输入持仓数量" placeholder-class="placeholder" />
+    </view>
+    
+    <view class="form-item">
+      <text class="form-label">持仓价格</text>
+      <input class="form-input" type="number" value="{{formData.costPrice}}" bindinput="onCostPriceChange" placeholder="请输入持仓价格" placeholder-class="placeholder" />
+    </view>
+    
+    <view class="form-item">
+      <text class="form-label">持仓成本</text>
+      <text class="form-value">¥{{formData.costAmount}}</text>
+    </view>
+  </view>
+  
+  <view class="error-message" wx:if="{{errorMessage}}">{{errorMessage}}</view>
+  
+  <view class="action-btns">
+    <button class="action-btn cancel" bindtap="onCancel">取消</button>
+    <button class="action-btn save" bindtap="onSave">保存</button>
+  </view>
+</view>

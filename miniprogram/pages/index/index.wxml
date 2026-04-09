@@ -44,7 +44,7 @@
             catchtap="onCardTap"
             data-index="{{index}}"
             data-id="{{item._id}}">
-        <view class="card-accent-bar" style="background: {{item.profit >= 0 ? 'linear-gradient(135deg, #52c41a 0%, #73d13d 100%)' : 'linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%)'}}"></view>
+        <view class="card-accent-bar" style="background: {{item.profit >= 0 ? 'linear-gradient(135deg, #E64340 0%, #E64340 100%)' : 'linear-gradient(135deg, #00A650 0%, #00A650 100%)'}}"></view>
         <view class="holding-content">
           <view class="card-header">
             <view class="asset-identity">
@@ -58,7 +58,7 @@
           
           <view class="main-metrics">
             <view class="metric-group">
-              <text class="metric-label">总金额</text>
+              <text class="metric-label">市值</text>
               <text class="metric-value primary {{item.profit >= 0 ? 'profit' : 'loss'}}">¥{{item.marketValueDisplay}}</text>
             </view>
             <view class="metric-group today-profit">
@@ -77,11 +77,11 @@
               <text class="detail-label">持仓成本</text>
               <text class="detail-value">¥{{item.costAmountDisplay}}</text>
               <view class="profit-bar">
-                <view class="profit-bar-fill" style="width: {{item.profitBarWidth}}%; background: {{item.profit >= 0 ? '#52c41a' : '#ff4d4f'}}"></view>
+                <view class="profit-bar-fill" style="width: {{item.profitBarWidth}}%; background: {{item.profit >= 0 ? '#E64340' : '#00A650'}}"></view>
               </view>
             </view>
             <view class="detail-item">
-              <text class="detail-label">成本价</text>
+              <text class="detail-label">成本</text>
               <text class="detail-value">{{item.costPriceDisplay}}</text>
             </view>
             <view class="detail-item">

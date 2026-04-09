@@ -5,14 +5,7 @@ Page({
   data: {
     holding: {},
     transactions: [],
-    assetInfo: {},
-    sharesLabel: '持有份额',
-    sharesDisplay: '0',
-    costPriceLabel: '成本价',
-    costAmountDisplay: '0.00',
-    marketValueDisplay: '0.00',
-    profitDisplay: '0.00',
-    profitPercent: 0
+    assetInfo: {}
   },
 
   onLoad(options) {
@@ -21,17 +14,42 @@ Page({
     }
   },
 
+  onShow() {
+    // 页面显示时刷新数据，确保编辑或添加交易后数据更新
+    if (this.data.holding._id) {
+      this.loadHoldingDetail(this.data.holding._id);
+    }
+  },
+
   async loadHoldingDetail(id) {
     try {
       wx.showLoading({ title: '加载中...' });
-      const holding = await api.getHoldingById(id);
-      const transactions = await api.getTransactionsByHolding(id);
+      const holdingResult = await api.getHoldingById(id);
+      const transactionsResult = await api.getTransactionsByHolding(id);
+      
+      let holding = holdingResult.data;
+      const transactions = transactionsResult.data;
+      
+      // 获取实时行情数据
+      if (holding.assetType === 'stock' && holding.assetCode) {
+        try {
+          const quoteResult = await api.getStockQuote(holding.assetCode);
+          if (quoteResult.code === 0 && quoteResult.data) {
+            const quoteData = quoteResult.data;
+            holding.currentPrice = quoteData.currentPrice;
+            holding.todayProfit = (quoteData.currentPrice - quoteData.preClose) * holding.shares;
+            holding.todayRate = quoteData.changePercent;
+            holding.preClose = quoteData.preClose;
+            holding.open = quoteData.open;
+            holding.high = quoteData.high;
+            holding.low = quoteData.low;
+          }
+        } catch (e) {
+          console.warn('获取行情失败', e);
+        }
+      }
       
       const assetInfo = format.getAssetTypeInfo(holding.assetType);
-      const costAmount = holding.costAmount || 0;
-      const profit = holding.profit || 0;
-      const maxLoss = costAmount > 0 ? costAmount : 1;
-      const percent = Math.abs(profit) / maxLoss * 100;
 
       const transactionsDisplay = transactions.map(t => ({
         ...t,
@@ -41,14 +59,7 @@ Page({
       this.setData({
         holding,
         transactions: transactionsDisplay,
-        assetInfo,
-        sharesLabel: holding.assetType === 'gold' ? '持有克数' : '持有份额',
-        sharesDisplay: holding.assetType === 'gold' ? holding.shares + 'g' : format.toFixed(holding.shares, 1),
-        costPriceLabel: holding.assetType === 'fund' ? '单位净值' : '成本价',
-        costAmountDisplay: format.toThousands(costAmount),
-        marketValueDisplay: format.toThousands(holding.marketValue),
-        profitDisplay: format.toFixed(profit),
-        profitPercent: Math.min(percent, 100)
+        assetInfo
       });
     } catch (error) {
       console.error('加载持仓详情失败', error);
@@ -60,6 +71,10 @@ Page({
 
   editHolding() {
     const { holding } = this.data;
+    if (!holding || !holding._id) {
+      wx.showToast({ title: '数据加载中，请稍后重试', icon: 'none' });
+      return;
+    }
     wx.navigateTo({
       url: `/pages/editHolding/editHolding?id=${holding._id}`
     });
@@ -67,8 +82,12 @@ Page({
 
   addTransaction() {
     const { holding } = this.data;
+    if (!holding || !holding._id) {
+      wx.showToast({ title: '数据加载中，请稍后重试', icon: 'none' });
+      return;
+    }
     wx.navigateTo({
-      url: `/pages/addTransaction/addTransaction?holdingId=${holding._id}&accountId=${holding.accountId}`
+      url: `/pages/addTransaction/addTransaction?holdingId=${holding._id}&accountId=${holding.accountId || ''}`
     });
   }
 });

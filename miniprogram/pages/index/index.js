@@ -92,12 +92,12 @@ Page({
           costAmountDisplay: format.toThousands(costAmount),
           marketValueDisplay: format.toThousands(marketValue),
           currentPriceDisplay: currentPrice ? Number(currentPrice).toFixed(2) : '0.00',
-          profitDisplay: format.toThousands(Math.abs(profit)),
-          profitRateDisplay: Math.abs(profitRate).toFixed(2),
+          profitDisplay: format.toThousands(profit),
+          profitRateDisplay: profitRate.toFixed(2),
           profit,
           profitRate,
-          todayProfitDisplay: format.toThousands(Math.abs(todayProfit)),
-          todayProfitRateDisplay: Math.abs(todayProfitRate).toFixed(2),
+          todayProfitDisplay: format.toThousands(todayProfit),
+          todayProfitRateDisplay: todayProfitRate.toFixed(2),
           todayProfit,
           todayProfitRate,
           profitBarWidth: Math.min(Math.abs(profitRate), 100)
@@ -109,7 +109,7 @@ Page({
       this.setData({ 
         recentHoldings,
         totalInvestmentDisplay: format.toThousands(totalInvestment),
-        totalProfitDisplay: format.toThousands(Math.abs(totalProfit)),
+        totalProfitDisplay: format.toThousands(totalProfit),
         totalProfit
       });
     } catch (error) {

@@ -10,7 +10,7 @@
 
   <view class="card-main">
     <view class="main-left">
-      <text class="main-label">总金额 {{updateTime}}</text>
+      <text class="main-label">市值 {{updateTime}}</text>
       <text class="main-value">{{marketValueDisplay}}</text>
     </view>
     <view class="main-right">
@@ -40,7 +40,7 @@
       <text class="detail-value">{{sharesDisplay}}</text>
     </view>
     <view class="detail-item">
-      <text class="detail-label">总盈亏</text>
+      <text class="detail-label">盈亏</text>
       <view>
         <text class="detail-value {{data.profit >= 0 ? 'up' : 'down'}}">
           {{data.profit > 0 ? '+' : ''}}{{profitDisplay}}

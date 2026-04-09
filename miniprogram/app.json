@@ -4,6 +4,8 @@
     "pages/assetDetail/assetDetail",
     "pages/addAsset/addAsset",
     "pages/holdingDetail/holdingDetail",
+    "pages/editHolding/editHolding",
+    "pages/addTransaction/addTransaction",
     "pages/transaction/transaction",
     "pages/analysis/analysis",
     "pages/profile/profile"
