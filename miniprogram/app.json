@@ -12,13 +12,14 @@
   ],
   "window": {
     "backgroundTextStyle": "dark",
-    "navigationBarBackgroundColor": "#1A73E8",
-    "navigationBarTitleText": "股票资产管家",
-    "navigationBarTextStyle": "white"
+    "navigationBarBackgroundColor": "#F8FAFC",
+    "navigationBarTitleText": "FinX Stock",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F8FAFC"
   },
   "tabBar": {
-    "color": "#9AA0A6",
-    "selectedColor": "#1A73E8",
+    "color": "#9CA3AF",
+    "selectedColor": "#2563EB",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
     "list": [

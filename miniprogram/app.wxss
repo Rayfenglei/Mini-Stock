@@ -1,117 +1,614 @@
-page {
-  --color-up: #E64340;
-  --color-down: #00A650;
-  --color-primary: #1A73E8;
-  --color-primary-light: #E8F0FE;
-  --color-success: #81C784;
-  --color-warning: #FFB74D;
-  --color-fund: #FF9800;
-  --color-fund-bg: #FFF3E0;
-  --color-gold: #FFD700;
-  --color-gold-bg: #FFFDE7;
-  --color-neutral: #9AA0A6;
-  --bg-color: #F5F6F7;
-  --card-bg: #FFFFFF;
-  --divider-color: #EEEEEE;
-  --text-primary: #333333;
-  --text-secondary: #666666;
-  --text-placeholder: #999999;
+/* ============================================
+   FinX Stock - 设计系统 v2.0
+   现代金融投资类小程序设计规范
+   ============================================ */
 
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+/* ---------- 色彩系统 ---------- */
+page {
+  /* 主色调 - 科技蓝 */
+  --primary-50: #EEF4FF;
+  --primary-100: #D9E6FF;
+  --primary-200: #B8D1FF;
+  --primary-300: #8AB4FF;
+  --primary-400: #5C9AFF;
+  --primary-500: #3B82F6;
+  --primary-600: #2563EB;
+  --primary-700: #1D4ED8;
+  --primary-800: #1E40AF;
+  --primary-900: #1E3A8A;
+
+  /* 涨跌色彩 */
+  --rise-color: #EF4444;
+  --rise-light: #FEE2E2;
+  --rise-gradient: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  
+  --fall-color: #10B981;
+  --fall-light: #D1FAE5;
+  --fall-gradient: linear-gradient(135deg, #10B981 0%, #059669 100%);
+
+  /* 中性色 */
+  --gray-50: #F9FAFB;
+  --gray-100: #F3F4F6;
+  --gray-200: #E5E7EB;
+  --gray-300: #D1D5DB;
+  --gray-400: #9CA3AF;
+  --gray-500: #6B7280;
+  --gray-600: #4B5563;
+  --gray-700: #374151;
+  --gray-800: #1F2937;
+  --gray-900: #111827;
+
+  /* 背景色 */
+  --bg-primary: #F8FAFC;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F1F5F9;
+  --bg-elevated: #FFFFFF;
+
+  /* 文字色 */
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+  --text-inverse: #FFFFFF;
+
+  /* 功能色 */
+  --success: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --info: #3B82F6;
+
+  /* 资产类型色 */
+  --stock-color: #3B82F6;
+  --stock-bg: #EFF6FF;
+  --fund-color: #8B5CF6;
+  --fund-bg: #F3E8FF;
+  --gold-color: #F59E0B;
+  --gold-bg: #FEF3C7;
+  --bond-color: #10B981;
+  --bond-bg: #D1FAE5;
+
+  /* 阴影 */
+  --shadow-sm: 0 1rpx 2rpx 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4rpx 6rpx -1rpx rgba(0, 0, 0, 0.1), 0 2rpx 4rpx -2rpx rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10rpx 15rpx -3rpx rgba(0, 0, 0, 0.1), 0 4rpx 6rpx -4rpx rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20rpx 25rpx -5rpx rgba(0, 0, 0, 0.1), 0 8rpx 10rpx -6rpx rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 20rpx rgba(59, 130, 246, 0.3);
+
+  /* 圆角 */
+  --radius-sm: 8rpx;
+  --radius-md: 12rpx;
+  --radius-lg: 16rpx;
+  --radius-xl: 24rpx;
+  --radius-2xl: 32rpx;
+  --radius-full: 9999rpx;
+
+  /* 间距 */
+  --space-1: 4rpx;
+  --space-2: 8rpx;
+  --space-3: 12rpx;
+  --space-4: 16rpx;
+  --space-5: 20rpx;
+  --space-6: 24rpx;
+  --space-8: 32rpx;
+  --space-10: 40rpx;
+  --space-12: 48rpx;
+
+  /* 字体 */
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 28rpx;
   color: var(--text-primary);
-  background-color: var(--bg-color);
+  background-color: var(--bg-primary);
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* ---------- 布局基础 ---------- */
 .container {
   min-height: 100vh;
-  background-color: var(--bg-color);
-  padding-bottom: 80rpx;
+  background-color: var(--bg-primary);
+  padding-bottom: calc(120rpx + env(safe-area-inset-bottom));
 }
 
-.up {
-  color: var(--color-up);
+.safe-area {
+  padding-left: var(--space-5);
+  padding-right: var(--space-5);
 }
 
-.down {
-  color: var(--color-down);
-}
+/* ---------- 排版系统 ---------- */
+.text-xs { font-size: 20rpx; line-height: 1.5; }
+.text-sm { font-size: 24rpx; line-height: 1.5; }
+.text-base { font-size: 28rpx; line-height: 1.5; }
+.text-lg { font-size: 32rpx; line-height: 1.4; }
+.text-xl { font-size: 36rpx; line-height: 1.3; }
+.text-2xl { font-size: 40rpx; line-height: 1.2; }
+.text-3xl { font-size: 48rpx; line-height: 1.2; }
+.text-4xl { font-size: 56rpx; line-height: 1.1; }
+.text-5xl { font-size: 64rpx; line-height: 1.1; }
 
-.text-primary {
-  color: var(--color-primary);
-}
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
 
-.text-secondary {
-  color: var(--text-secondary);
-}
+/* ---------- 颜色工具类 ---------- */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-inverse { color: var(--text-inverse); }
+.text-rise { color: var(--rise-color); }
+.text-fall { color: var(--fall-color); }
+.text-brand { color: var(--primary-600); }
 
-.text-placeholder {
-  color: var(--text-placeholder);
-}
+.bg-primary { background-color: var(--bg-primary); }
+.bg-secondary { background-color: var(--bg-secondary); }
+.bg-tertiary { background-color: var(--bg-tertiary); }
 
+/* ---------- 卡片组件 ---------- */
 .card {
-  margin: 20rpx;
-  padding: 30rpx;
-  background: var(--card-bg);
-  border-radius: 16rpx;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  margin: var(--space-4) var(--space-5);
+  overflow: hidden;
+}
+
+.card-flat {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-xl);
+  border: 1rpx solid var(--gray-200);
+  margin: var(--space-4) var(--space-5);
+  overflow: hidden;
+}
+
+.card-elevated {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  margin: var(--space-4) var(--space-5);
+  overflow: hidden;
+}
+
+.card-gradient {
+  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+  border-radius: var(--radius-xl);
+  margin: var(--space-4) var(--space-5);
+  overflow: hidden;
+  color: var(--text-inverse);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1rpx solid var(--gray-100);
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.card-subtitle {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  margin-top: var(--space-1);
+}
+
+.card-body {
+  padding: var(--space-5) var(--space-6);
+}
+
+/* ---------- 按钮组件 ---------- */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+  border-radius: var(--radius-full);
+  font-size: 30rpx;
+  font-weight: 600;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn::after {
+  border: none;
 }
 
 .btn-primary {
-  width: 100%;
-  height: 88rpx;
-  background: var(--color-primary);
-  color: white;
-  border-radius: 44rpx;
-  font-size: 32rpx;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+  color: var(--text-inverse);
+  box-shadow: 0 4rpx 14rpx rgba(59, 130, 246, 0.4);
 }
 
-.btn-primary::after {
-  border: none;
+.btn-primary:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary {
+  background: var(--gray-100);
+  color: var(--text-primary);
+}
+
+.btn-secondary:active {
+  background: var(--gray-200);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2rpx solid var(--gray-300);
+  color: var(--text-primary);
+}
+
+.btn-outline:active {
+  background: var(--gray-50);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--primary-600);
+}
+
+.btn-ghost:active {
+  background: var(--primary-50);
 }
 
 .btn-success {
-  width: 100%;
-  height: 88rpx;
-  background: var(--color-success);
-  color: white;
-  border-radius: 44rpx;
+  background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+  color: var(--text-inverse);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--error) 0%, #DC2626 100%);
+  color: var(--text-inverse);
+}
+
+.btn-sm {
+  height: 64rpx;
+  font-size: 26rpx;
+  padding: 0 var(--space-6);
+}
+
+.btn-lg {
+  height: 104rpx;
   font-size: 32rpx;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.btn-success::after {
-  border: none;
+.btn-block {
+  width: 100%;
 }
 
-.asset-tag {
+.btn-icon {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  padding: 0;
+}
+
+/* ---------- 标签组件 ---------- */
+.tag {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 20rpx;
-  padding: 4rpx 12rpx;
-  border-radius: 8rpx;
-  margin-right: 10rpx;
+  font-weight: 600;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
 }
 
-.asset-tag-stock {
-  background: var(--color-primary-light);
-  color: var(--color-primary);
+.tag-stock {
+  background: var(--stock-bg);
+  color: var(--stock-color);
 }
 
-.asset-tag-fund {
-  background: var(--color-fund-bg);
-  color: var(--color-fund);
+.tag-fund {
+  background: var(--fund-bg);
+  color: var(--fund-color);
 }
 
-.asset-tag-gold {
-  background: var(--color-gold-bg);
-  color: var(--color-gold);
+.tag-gold {
+  background: var(--gold-bg);
+  color: var(--gold-color);
+}
+
+.tag-bond {
+  background: var(--bond-bg);
+  color: var(--bond-color);
+}
+
+.tag-rise {
+  background: var(--rise-light);
+  color: var(--rise-color);
+}
+
+.tag-fall {
+  background: var(--fall-light);
+  color: var(--fall-color);
+}
+
+/* ---------- 表单组件 ---------- */
+.input-group {
+  margin-bottom: var(--space-5);
+}
+
+.input-label {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.input-field {
+  width: 100%;
+  height: 96rpx;
+  background: var(--bg-secondary);
+  border: 2rpx solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 0 var(--space-5);
+  font-size: 30rpx;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.input-field:focus {
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3rpx var(--primary-100);
+}
+
+.input-field::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* ---------- 列表组件 ---------- */
+.list-group {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  margin: var(--space-4) var(--space-5);
+  overflow: hidden;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1rpx solid var(--gray-100);
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item:active {
+  background: var(--gray-50);
+}
+
+.list-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-item-title {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.list-item-desc {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  margin-top: var(--space-1);
+}
+
+.list-item-arrow {
+  font-size: 28rpx;
+  color: var(--text-tertiary);
+  margin-left: var(--space-4);
+}
+
+/* ---------- 空状态 ---------- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-8);
+}
+
+.empty-icon {
+  width: 160rpx;
+  height: 160rpx;
+  background: var(--gray-100);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80rpx;
+  margin-bottom: var(--space-6);
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.empty-desc {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* ---------- 数据展示 ---------- */
+.stat-value {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.stat-value-lg {
+  font-size: 64rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-1);
+}
+
+.stat-change {
+  display: inline-flex;
+  align-items: center;
+  font-size: 24rpx;
+  font-weight: 600;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+.stat-change.up {
+  background: var(--rise-light);
+  color: var(--rise-color);
+}
+
+.stat-change.down {
+  background: var(--fall-light);
+  color: var(--fall-color);
+}
+
+/* ---------- 分割线 ---------- */
+.divider {
+  height: 1rpx;
+  background: var(--gray-200);
+  margin: var(--space-4) 0;
+}
+
+.divider-dashed {
+  height: 1rpx;
+  background: repeating-linear-gradient(
+    to right,
+    var(--gray-300) 0,
+    var(--gray-300) 8rpx,
+    transparent 8rpx,
+    transparent 16rpx
+  );
+}
+
+/* ---------- 浮动按钮 ---------- */
+.fab {
+  position: fixed;
+  right: var(--space-6);
+  bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
+  width: 112rpx;
+  height: 112rpx;
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  z-index: 100;
+}
+
+.fab:active {
+  transform: scale(0.95);
+}
+
+.fab-icon {
+  font-size: 48rpx;
+  color: var(--text-inverse);
+  font-weight: 300;
+}
+
+/* ---------- 底部操作栏 ---------- */
+.bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-secondary);
+  padding: var(--space-4) var(--space-5);
+  padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
+
+/* ---------- 动画 ---------- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ---------- 工具类 ---------- */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.flex-1 { flex: 1; }
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.gap-4 { gap: var(--space-4); }
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ---------- 涨跌通用类 ---------- */
+.up { color: var(--rise-color); }
+.down { color: var(--fall-color); }
+.bg-up { background-color: var(--rise-light); }
+.bg-down { background-color: var(--fall-light); }
+
+/* ---------- 页面过渡 ---------- */
+.page-enter {
+  animation: slideUp 0.3s ease-out;
 }

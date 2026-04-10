@@ -3,14 +3,23 @@ const format = require('../../utils/format');
 
 Page({
   data: {
+    holdings: [],
     recentHoldings: [],
+    totalAssetsDisplay: '0.00',
     totalInvestmentDisplay: '0.00',
     totalProfitDisplay: '0.00',
+    totalProfitRateDisplay: '0.00',
     totalProfit: 0,
+    timeRange: '本周',
+    userName: '',
+    userInfo: {},
+    hasNotification: false,
     touchStartX: 0,
     touchStartY: 0,
     currentSwipeIndex: -1,
-    deleteBtnWidth: 0
+    deleteBtnWidth: 0,
+    sortType: 'value',
+    sortAsc: false
   },
 
   onLoad() {
@@ -34,15 +43,34 @@ Page({
 
   async loadRecentHoldings() {
     try {
-      const result = await api.getHoldings('', false);
-      const holdings = (result && result.data) || result || [];
+      // 获取用户登录信息
+      const app = getApp();
+      const userInfo = app.globalData.userInfo || {};
       
-      if (!Array.isArray(holdings)) {
+      const result = await api.getHoldings('', false);
+      console.log('getHoldings result:', result);
+      
+      // 处理云函数返回格式 {code: 0, data: [...]}
+      let holdings = [];
+      if (result && result.code === 0 && Array.isArray(result.data)) {
+        holdings = result.data;
+      } else if (Array.isArray(result)) {
+        holdings = result;
+      } else if (result && result.data) {
+        holdings = result.data;
+      }
+      
+      if (!Array.isArray(holdings) || holdings.length === 0) {
+        console.log('暂无持仓数据');
         this.setData({ 
+          holdings: [],
           recentHoldings: [],
+          totalAssetsDisplay: '0.00',
           totalInvestmentDisplay: '0.00',
           totalProfitDisplay: '0.00',
-          totalProfit: 0
+          totalProfitRateDisplay: '0.00',
+          totalProfit: 0,
+          userName: userInfo.nickName || ''
         });
         return;
       }
@@ -64,7 +92,7 @@ Page({
         }
       }
       
-      const recentHoldings = holdings.slice(0, 10).map(item => {
+      const processedHoldings = holdings.map(item => {
         if (!item) return null;
         const costAmount = (item.shares || 0) * (item.costPrice || 0);
         
@@ -78,8 +106,10 @@ Page({
         const profitRate = costAmount > 0 ? (profit / costAmount * 100) : 0;
         const todayProfit = item.todayProfit || 0;
         const todayProfitRate = marketValue > 0 ? (todayProfit / marketValue * 100) : 0;
+        const todayChange = item.todayChange || 0;
         const assetTypeText = item.assetType === 'stock' ? '股票' : 
-                              item.assetType === 'fund' ? '基金' : '黄金';
+                              item.assetType === 'fund' ? '基金' : 
+                              item.assetType === 'gold' ? '黄金' : '债券';
         
         totalInvestment += costAmount;
         totalMarketValue += marketValue;
@@ -100,26 +130,104 @@ Page({
           todayProfitRateDisplay: todayProfitRate.toFixed(2),
           todayProfit,
           todayProfitRate,
-          profitBarWidth: Math.min(Math.abs(profitRate), 100)
+          todayChange,
+          profitBarWidth: Math.min(Math.abs(profitRate), 100),
+          isTodayUpdated: item.isTodayUpdated || false
         };
       }).filter(item => item !== null);
       
       const totalProfit = totalMarketValue - totalInvestment;
+      const totalProfitRate = totalInvestment > 0 ? (totalProfit / totalInvestment * 100) : 0;
       
       this.setData({ 
-        recentHoldings,
+        holdings: processedHoldings,
+        recentHoldings: processedHoldings.slice(0, 10),
+        totalAssetsDisplay: format.toThousands(totalMarketValue),
         totalInvestmentDisplay: format.toThousands(totalInvestment),
         totalProfitDisplay: format.toThousands(totalProfit),
-        totalProfit
+        totalProfitRateDisplay: totalProfitRate.toFixed(2),
+        totalProfit,
+        userName: userInfo.nickName || ''
       });
+      
+      console.log('持仓数据加载成功:', processedHoldings.length, '条');
     } catch (error) {
       console.error('加载持仓失败', error);
-      wx.showToast({ title: '加载失败', icon: 'none' });
+      wx.showToast({ title: '加载失败: ' + (error.message || '未知错误'), icon: 'none' });
     }
   },
 
   onAddAssetTap() {
     wx.navigateTo({ url: '/pages/addAsset/addAsset' });
+  },
+
+  onAnalysisTap() {
+    wx.switchTab({ url: '/pages/analysis/analysis' });
+  },
+
+  onTransactionTap() {
+    wx.navigateTo({ url: '/pages/transaction/transaction' });
+  },
+
+  onSettingsTap() {
+    wx.navigateTo({ url: '/pages/profile/profile' });
+  },
+
+  onNotificationTap() {
+    wx.showToast({ title: '暂无通知', icon: 'none' });
+  },
+
+  onTimeSelectorTap() {
+    const timeRanges = ['本周', '本月', '本年', '全部'];
+    wx.showActionSheet({
+      itemList: timeRanges,
+      success: (res) => {
+        this.setData({ timeRange: timeRanges[res.tapIndex] });
+        this.loadRecentHoldings();
+      }
+    });
+  },
+
+  onSortTap() {
+    const sortTypes = [
+      { type: 'value', name: '按市值' },
+      { type: 'profit', name: '按盈亏' },
+      { type: 'name', name: '按名称' }
+    ];
+    wx.showActionSheet({
+      itemList: sortTypes.map(s => s.name),
+      success: (res) => {
+        const newSortType = sortTypes[res.tapIndex].type;
+        this.setData({ 
+          sortType: newSortType,
+          sortAsc: !this.data.sortAsc
+        });
+        this.sortHoldings(newSortType, this.data.sortAsc);
+      }
+    });
+  },
+
+  sortHoldings(sortType, sortAsc) {
+    const holdings = [...this.data.holdings];
+    holdings.sort((a, b) => {
+      let comparison = 0;
+      switch(sortType) {
+        case 'value':
+          comparison = (b.marketValue || 0) - (a.marketValue || 0);
+          break;
+        case 'profit':
+          comparison = (b.profit || 0) - (a.profit || 0);
+          break;
+        case 'name':
+          comparison = (a.assetName || '').localeCompare(b.assetName || '');
+          break;
+      }
+      return sortAsc ? -comparison : comparison;
+    });
+    this.setData({ 
+      holdings,
+      recentHoldings: holdings.slice(0, 10)
+    });
   },
 
   onHoldingTap(e) {
