@@ -10,14 +10,16 @@ Page({
 
   onLoad(options) {
     if (options.id) {
+      this.holdingId = options.id;
       this.loadHoldingDetail(options.id);
     }
   },
 
   onShow() {
     // 页面显示时刷新数据，确保编辑或添加交易后数据更新
-    if (this.data.holding._id) {
-      this.loadHoldingDetail(this.data.holding._id);
+    const id = this.holdingId || this.data.holding._id;
+    if (id) {
+      this.loadHoldingDetail(id);
     }
   },
 
