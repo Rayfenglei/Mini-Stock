@@ -54,7 +54,7 @@
       </view>
       <text class="metric-label">最佳持仓</text>
       <text class="metric-value">{{bestHolding.name || '--'}}</text>
-      <text class="metric-rate up">+{{bestHolding.rate || 0}}%</text>
+      <text class="metric-rate up">{{bestHolding.rate >= 0 ? '+' : ''}}{{bestHolding.rate || 0}}%</text>
     </view>
     <view class="metric-card card">
       <view class="metric-icon down">
@@ -62,7 +62,7 @@
       </view>
       <text class="metric-label">最差持仓</text>
       <text class="metric-value">{{worstHolding.name || '--'}}</text>
-      <text class="metric-rate down">{{worstHolding.rate || 0}}%</text>
+      <text class="metric-rate down">{{worstHolding.rate >= 0 ? '+' : ''}}{{worstHolding.rate || 0}}%</text>
     </view>
     <view class="metric-card card">
       <view class="metric-icon">
@@ -99,32 +99,6 @@
     </view>
     <view class="chart-container">
       <canvas type="2d" id="distributionChart" class="chart-canvas"></canvas>
-    </view>
-  </view>
-
-  <!-- 资产趋势 -->
-  <view class="chart-card card">
-    <view class="chart-header">
-      <text class="chart-title">资产趋势</text>
-      <view class="chart-tabs">
-        <view 
-          class="chart-tab {{trendType === 'value' ? 'active' : ''}}"
-          bindtap="onTrendTypeChange"
-          data-type="value"
-        >
-          市值
-        </view>
-        <view 
-          class="chart-tab {{trendType === 'profit' ? 'active' : ''}}"
-          bindtap="onTrendTypeChange"
-          data-type="profit"
-        >
-          盈亏
-        </view>
-      </view>
-    </view>
-    <view class="chart-container">
-      <canvas type="2d" id="trendChart" class="chart-canvas"></canvas>
     </view>
   </view>
 
