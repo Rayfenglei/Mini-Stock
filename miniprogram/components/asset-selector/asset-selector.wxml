@@ -23,15 +23,6 @@
     </view>
   </view>
 
-  <view wx:if="{{currentType !== 'gold'}}" class="search-box">
-    <input 
-      class="search-input" 
-      placeholder="输入{{currentType === 'stock' ? '股票' : '基金'}}名称或代码" 
-      value="{{searchKeyword}}"
-      bindinput="onSearchInput"
-      bindconfirm="onSearch"
-    />
-  </view>
 
   <view wx:if="{{searchResults.length > 0}}" class="search-results">
     <view 

@@ -26,6 +26,7 @@ module.exports = {
 
   getStockQuote: (code) => callFunction('getStockQuote', { code }),
   getFundQuote: (code) => callFunction('getFundQuote', { code }),
+  getFundHistory: (code, date) => callFunction('getFundHistory', { code, date }),
   getGoldQuote: (code) => callFunction('getGoldQuote', { code }),
 
   getBatchQuotes: (codes) => callFunction('getBatchQuotes', { codes }),

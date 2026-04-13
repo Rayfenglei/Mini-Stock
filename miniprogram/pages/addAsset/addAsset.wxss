@@ -9,55 +9,70 @@
   padding: 30rpx;
   background: #fff;
   border-radius: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
 }
 
 .form-item {
-  margin-bottom: 30rpx;
+  margin-bottom: 24rpx;
 }
 
 .form-item.readonly {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #f0f0f0;
 }
 
 .form-label {
   font-size: 28rpx;
-  color: #666;
-  margin-bottom: 10rpx;
+  color: #333;
+  margin-bottom: 12rpx;
   display: block;
+  font-weight: 500;
 }
 
 .form-input {
   width: 100%;
-  height: 80rpx;
-  padding: 0 20rpx;
-  background: #f5f5f5;
+  height: 88rpx;
+  padding: 0 24rpx;
+  background: #f8f9fa;
   border-radius: 12rpx;
   font-size: 28rpx;
+  border: 2rpx solid transparent;
+  transition: border-color 0.3s;
+}
+
+.form-input:focus {
+  border-color: #1A73E8;
 }
 
 .form-picker {
   width: 100%;
-  height: 80rpx;
-  padding: 0 20rpx;
-  background: #f5f5f5;
+  height: 88rpx;
+  padding: 0 24rpx;
+  background: #f8f9fa;
   border-radius: 12rpx;
   font-size: 28rpx;
-  line-height: 80rpx;
+  line-height: 88rpx;
   color: #333;
 }
 
-.form-picker.placeholder {
-  color: #999;
-}
-
 .form-hint {
-  font-size: 22rpx;
-  color: #999;
+  font-size: 24rpx;
+  color: #666;
   margin-top: 8rpx;
   display: block;
   line-height: 1.4;
+}
+
+.form-hint.date-hint {
+  color: #1A73E8;
+  font-weight: 500;
+}
+
+.form-hint.date-hint.warning {
+  color: #FF9800;
 }
 
 .form-value {
@@ -66,7 +81,416 @@
   color: #1A73E8;
 }
 
+/* ========== 场景指示器 ========== */
+.scene-indicator {
+  margin: 20rpx;
+  padding: 24rpx;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16rpx;
+  text-align: center;
+}
+
+.scene-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 16rpx 32rpx;
+  border-radius: 40rpx;
+  margin-bottom: 16rpx;
+}
+
+.scene-badge.auto {
+  background: linear-gradient(135deg, #1A73E8 0%, #1557B0 100%);
+}
+
+.scene-badge.manual {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+}
+
+.scene-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+}
+
+.scene-text {
+  font-size: 28rpx;
+  color: #fff;
+  font-weight: 600;
+}
+
+.scene-desc {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* ========== 错误提示 ========== */
+.error-banner {
+  margin: 20rpx;
+  padding: 20rpx 24rpx;
+  background: #ffebee;
+  border: 2rpx solid #ffcdd2;
+  border-radius: 12rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.error-text {
+  font-size: 26rpx;
+  color: #c62828;
+  flex: 1;
+}
+
+.error-close {
+  font-size: 28rpx;
+  color: #c62828;
+  padding: 8rpx;
+  margin-left: 16rpx;
+}
+
+/* ========== 计算按钮 ========== */
+.calc-btn-wrapper {
+  margin: 40rpx 0;
+}
+
+.btn-calc {
+  width: 100%;
+  height: 96rpx;
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+  color: #fff;
+  border-radius: 48rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(255, 152, 0, 0.3);
+}
+
+.btn-calc::after {
+  border: none;
+}
+
+.btn-calc[disabled] {
+  background: #ccc;
+  color: #fff;
+  box-shadow: none;
+}
+
+/* ========== 历史净值列表 ========== */
+.history-section {
+  margin-top: 40rpx;
+  padding-top: 40rpx;
+  border-top: 2rpx dashed #e0e0e0;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.history-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.history-subtitle {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 分页控件 */
+.pagination-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 24rpx;
+  gap: 24rpx;
+}
+
+.page-btn {
+  padding: 16rpx 32rpx;
+  background: #1A73E8;
+  color: #fff;
+  border-radius: 32rpx;
+  font-size: 26rpx;
+  border: none;
+}
+
+.page-btn::after {
+  border: none;
+}
+
+.page-btn.disabled {
+  background: #ccc;
+}
+
+.page-info {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.page-current {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1A73E8;
+}
+
+.page-separator {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.page-total {
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 历史数据表格 */
+.history-table {
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  padding: 20rpx 16rpx;
+  background: #e3f2fd;
+  font-weight: 600;
+}
+
+.table-row {
+  display: flex;
+  padding: 20rpx 16rpx;
+  border-bottom: 1rpx solid #e0e0e0;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.th-date, .td-date {
+  flex: 2;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.th-value, .td-value {
+  flex: 2;
+  font-size: 26rpx;
+  color: #333;
+  text-align: center;
+}
+
+.th-action, .td-action {
+  flex: 1;
+  font-size: 26rpx;
+  color: #1A73E8;
+  text-align: center;
+}
+
+.td-action {
+  font-weight: 500;
+}
+
+.td-action:active {
+  opacity: 0.7;
+}
+
+/* ========== 计算结果 ========== */
+.calc-result {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin: 40rpx 0;
+  border: 2rpx solid #bbdefb;
+}
+
+.calc-result.manual-result {
+  background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+  border-color: #ffe082;
+}
+
+.result-header {
+  margin-bottom: 24rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.1);
+}
+
+.result-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #333;
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.result-item:last-child {
+  margin-bottom: 0;
+}
+
+.result-item.highlight {
+  background: rgba(255, 255, 255, 0.8);
+  margin: 0 -20rpx;
+  padding: 24rpx 20rpx;
+  border-radius: 12rpx;
+}
+
+.result-label {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.result-value {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1A73E8;
+}
+
+.result-item.highlight .result-value {
+  color: #FF9800;
+  font-size: 40rpx;
+}
+
+.formula-hint {
+  margin-top: 24rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx dashed rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.formula-hint text {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* ========== 提交按钮 ========== */
 .submit-btn-wrapper {
-  padding: 40rpx;
-  padding-bottom: 80rpx;
+  padding: 20rpx 0;
+}
+
+.btn-primary {
+  width: 100%;
+  height: 96rpx;
+  background: linear-gradient(135deg, #1A73E8 0%, #1557B0 100%);
+  color: #fff;
+  border-radius: 48rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(26, 115, 232, 0.3);
+}
+
+.btn-primary::after {
+  border: none;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* ========== 手动输入提示 ========== */
+.manual-tips {
+  margin-top: 40rpx;
+  padding: 30rpx;
+  background: #fff8e1;
+  border-radius: 16rpx;
+  border-left: 6rpx solid #FF9800;
+}
+
+.manual-tips .tips-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.manual-tips .tips-item {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 8rpx;
+}
+
+/* ========== 使用说明卡片 ========== */
+.tips-card {
+  margin: 20rpx;
+  padding: 30rpx;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16rpx;
+  border-left: 6rpx solid #1A73E8;
+}
+
+.tips-card .tips-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.tips-card .tips-item {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 12rpx;
+}
+
+/* ========== 响应式适配 ========== */
+@media (max-width: 375px) {
+  .form-card {
+    margin: 16rpx;
+    padding: 24rpx;
+  }
+
+  .section-title {
+    padding: 24rpx 32rpx 16rpx;
+    font-size: 30rpx;
+  }
+
+  .form-input, .form-picker {
+    height: 80rpx;
+    font-size: 26rpx;
+  }
+
+  .btn-calc, .btn-primary {
+    height: 88rpx;
+    font-size: 30rpx;
+  }
+
+  .result-value {
+    font-size: 28rpx;
+  }
+
+  .result-item.highlight .result-value {
+    font-size: 34rpx;
+  }
+}
+
+@media (min-width: 414px) {
+  .form-card {
+    margin: 24rpx;
+    padding: 36rpx;
+  }
+
+  .form-label {
+    font-size: 30rpx;
+  }
+
+  .form-input, .form-picker {
+    height: 96rpx;
+    font-size: 30rpx;
+  }
 }
