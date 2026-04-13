@@ -21,6 +21,10 @@
     <view class="market-tag" wx:if="{{holding.market}}">
       <text>{{holding.market}}</text>
     </view>
+    <!-- 基金类型标签 -->
+    <view class="fund-type-tag" wx:if="{{isFund && fundTypeDisplay}}">
+      <text>{{fundTypeDisplay}}</text>
+    </view>
     <view class="update-time">
       <text>更新于 {{updateTime}}</text>
     </view>
@@ -33,15 +37,20 @@
         <text class="currency">¥</text>
         <text class="price-value">{{currentPriceDisplay}}</text>
       </view>
-      <view class="price-change {{todayChange >= 0 ? 'up' : 'down'}}">
+      <view class="price-change {{todayChange >= 0 ? 'up' : 'down'}}" wx:if="{{!isFund}}">
         <text class="change-icon">{{todayChange >= 0 ? '▲' : '▼'}}</text>
         <text class="change-value">{{todayChange >= 0 ? '+' : ''}}{{todayChangeDisplay}}</text>
         <text class="change-rate">({{todayChangeRate >= 0 ? '+' : ''}}{{todayChangeRateDisplay}}%)</text>
       </view>
+      <!-- 基金涨跌幅显示 -->
+      <view class="price-change {{todayChangeRate >= 0 ? 'up' : 'down'}}" wx:if="{{isFund}}">
+        <text class="change-icon">{{todayChangeRate >= 0 ? '▲' : '▼'}}</text>
+        <text class="change-rate">{{todayChangeRate >= 0 ? '+' : ''}}{{todayChangeRateDisplay}}%</text>
+      </view>
     </view>
-    
-    <!-- 价格统计 -->
-    <view class="price-stats">
+
+    <!-- 股票价格统计 -->
+    <view class="price-stats" wx:if="{{!isFund}}">
       <view class="stat-item">
         <text class="stat-label">今开</text>
         <text class="stat-value">{{openPriceDisplay}}</text>
@@ -59,6 +68,12 @@
         <text class="stat-value">{{prevCloseDisplay}}</text>
       </view>
     </view>
+
+    <!-- 基金净值日期 -->
+    <view class="fund-info" wx:if="{{isFund && holding.netValueDate}}">
+      <text class="fund-info-label">净值日期：{{holding.netValueDate}}</text>
+      <text class="fund-info-label" wx:if="{{holding.estimateTime}}">估算时间：{{holding.estimateTime}}</text>
+    </view>
   </view>
 
   <!-- 持仓概览卡片 -->
@@ -69,7 +84,7 @@
         <text>编辑</text>
       </view>
     </view>
-    
+
     <view class="holding-overview">
       <view class="overview-main">
         <view class="overview-item">
@@ -88,18 +103,18 @@
           </view>
         </view>
       </view>
-      
+
       <view class="overview-grid">
         <view class="grid-item">
           <text class="grid-label">持仓成本</text>
           <text class="grid-value">¥{{costAmountDisplay}}</text>
         </view>
         <view class="grid-item">
-          <text class="grid-label">成本单价</text>
+          <text class="grid-label">{{isFund ? '成本净值' : '成本单价'}}</text>
           <text class="grid-value">{{costPriceDisplay}}</text>
         </view>
         <view class="grid-item">
-          <text class="grid-label">持有数量</text>
+          <text class="grid-label">{{isFund ? '持有份额' : '持有数量'}}</text>
           <text class="grid-value">{{sharesDisplay}}</text>
         </view>
         <view class="grid-item">
@@ -108,6 +123,22 @@
             {{todayProfit >= 0 ? '+' : ''}}¥{{todayProfitDisplay}}
           </text>
         </view>
+      </view>
+    </view>
+
+    <!-- 基金特有信息 -->
+    <view class="fund-extra-info" wx:if="{{isFund}}">
+      <view class="extra-item" wx:if="{{purchaseDateDisplay}}">
+        <text class="extra-label">购买日期</text>
+        <text class="extra-value">{{purchaseDateDisplay}}</text>
+      </view>
+      <view class="extra-item" wx:if="{{expectedReturnDisplay}}">
+        <text class="extra-label">预期年化收益率</text>
+        <text class="extra-value">{{expectedReturnDisplay}}%</text>
+      </view>
+      <view class="extra-item" wx:if="{{holding.purchaseAmount}}">
+        <text class="extra-label">购买金额</text>
+        <text class="extra-value">¥{{holding.purchaseAmount}}</text>
       </view>
     </view>
   </view>
@@ -121,7 +152,7 @@
         <text class="arrow">→</text>
       </view>
     </view>
-    
+
     <view class="transaction-list" wx:if="{{transactions.length > 0}}">
       <view class="transaction-item" wx:for="{{transactions}}" wx:key="_id">
         <view class="transaction-left">
@@ -135,11 +166,11 @@
         </view>
         <view class="transaction-right">
           <text class="transaction-amount">{{item.type === 'buy' ? '-' : '+'}}¥{{item.amountDisplay}}</text>
-          <text class="transaction-detail">{{item.sharesDisplay}}股 @ ¥{{item.priceDisplay}}</text>
+          <text class="transaction-detail">{{item.sharesDisplay}}{{isFund ? '份' : '股'}} @ ¥{{item.priceDisplay}}</text>
         </view>
       </view>
     </view>
-    
+
     <view wx:else class="empty-transactions">
       <text class="empty-text">暂无交易记录</text>
     </view>

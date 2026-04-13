@@ -3,7 +3,7 @@ const isValidStockCode = (code) => {
 };
 
 const isValidFundCode = (code) => {
-  return /^(sh|sz)\d{6}$/i.test(code);
+  return /^\d{6}$/.test(code);
 };
 
 const isValidGoldCode = (code) => {
@@ -33,6 +33,25 @@ const isValidShares = (shares) => {
   return !isNaN(num) && num > 0;
 };
 
+const isValidAmount = (amount) => {
+  const num = parseFloat(amount);
+  return !isNaN(num) && num > 0;
+};
+
+const isValidExpectedReturn = (rate) => {
+  if (!rate || rate === '') return true; // 可选字段
+  const num = parseFloat(rate);
+  return !isNaN(num) && num >= -100 && num <= 100;
+};
+
+const isValidDate = (date) => {
+  if (!date) return false;
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!regex.test(date)) return false;
+  const d = new Date(date);
+  return d instanceof Date && !isNaN(d);
+};
+
 const validateHoldingForm = (formData) => {
   const errors = [];
 
@@ -43,7 +62,13 @@ const validateHoldingForm = (formData) => {
   if (!formData.assetCode) {
     errors.push('请输入资产代码');
   } else if (!isValidAssetCode(formData.assetType, formData.assetCode)) {
-    errors.push('资产代码格式不正确');
+    if (formData.assetType === 'fund') {
+      errors.push('基金代码格式不正确，应为6位数字');
+    } else if (formData.assetType === 'stock') {
+      errors.push('股票代码格式不正确，需包含市场前缀如sh/sz/bj');
+    } else {
+      errors.push('资产代码格式不正确');
+    }
   }
 
   if (!formData.assetName) {
@@ -56,6 +81,21 @@ const validateHoldingForm = (formData) => {
 
   if (!formData.costPrice || !isValidPrice(formData.costPrice)) {
     errors.push('请输入正确的成本价');
+  }
+
+  // 基金特有字段验证
+  if (formData.assetType === 'fund') {
+    if (formData.purchaseDate && !isValidDate(formData.purchaseDate)) {
+      errors.push('购买日期格式不正确');
+    }
+
+    if (formData.purchaseAmount && !isValidAmount(formData.purchaseAmount)) {
+      errors.push('购买金额必须大于0');
+    }
+
+    if (!isValidExpectedReturn(formData.expectedReturn)) {
+      errors.push('预期收益率必须在-100%到100%之间');
+    }
   }
 
   return {
@@ -92,6 +132,9 @@ module.exports = {
   isValidAssetCode,
   isValidPrice,
   isValidShares,
+  isValidAmount,
+  isValidExpectedReturn,
+  isValidDate,
   validateHoldingForm,
   validateAccountForm
 };

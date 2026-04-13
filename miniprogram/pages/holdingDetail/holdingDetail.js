@@ -32,7 +32,12 @@ Page({
     sharesDisplay: '0',
     todayProfitDisplay: '0.00',
     todayProfit: 0,
-    updateTime: '--'
+    updateTime: '--',
+    // 基金特有数据
+    fundTypeDisplay: '',
+    purchaseDateDisplay: '',
+    expectedReturnDisplay: '',
+    isFund: false
   },
 
   onLoad(options) {
@@ -83,7 +88,21 @@ Page({
             holding.low = quoteData.low;
           }
         } catch (e) {
-          console.warn('获取行情失败', e);
+          console.warn('获取股票行情失败', e);
+        }
+      } else if (holding.assetType === 'fund' && holding.assetCode) {
+        try {
+          const quoteResult = await api.getFundQuote(holding.assetCode);
+          if (quoteResult.code === 0 && quoteResult.data) {
+            const quoteData = quoteResult.data;
+            holding.currentPrice = quoteData.netValue;
+            holding.todayProfit = (quoteData.netValue - (holding.costPrice || quoteData.netValue)) * holding.shares;
+            holding.todayRate = quoteData.estimateRate || 0;
+            holding.netValueDate = quoteData.date;
+            holding.estimateTime = quoteData.estimateTime;
+          }
+        } catch (e) {
+          console.warn('获取基金行情失败', e);
         }
       }
 
@@ -110,13 +129,19 @@ Page({
         amountDisplay: format.toThousands(t.amount)
       }));
 
+      // 基金特有数据显示
+      const isFund = holding.assetType === 'fund';
+      const fundTypeDisplay = holding.fundType || '';
+      const purchaseDateDisplay = holding.purchaseDate || '';
+      const expectedReturnDisplay = holding.expectedReturn ? holding.expectedReturn.toFixed(2) : '';
+
       this.setData({
         holding,
         transactions: transactionsDisplay,
         assetInfo,
         // 价格数据
-        currentPriceDisplay: Number(currentPrice).toFixed(2),
-        todayChangeDisplay: Math.abs(todayChange).toFixed(2),
+        currentPriceDisplay: Number(currentPrice).toFixed(4),
+        todayChangeDisplay: Math.abs(todayChange).toFixed(4),
         todayChangeRateDisplay: Math.abs(todayChangeRate).toFixed(2),
         todayChange,
         todayChangeRate,
@@ -134,11 +159,16 @@ Page({
         totalProfit,
         totalProfitRate,
         costAmountDisplay: format.toThousands(costAmount),
-        costPriceDisplay: Number(costPrice).toFixed(2),
+        costPriceDisplay: Number(costPrice).toFixed(4),
         sharesDisplay: format.toThousands(shares),
         todayProfitDisplay: format.toThousands(Math.abs(todayProfit)),
         todayProfit,
-        updateTime: format.formatDate(new Date(), 'HH:mm')
+        updateTime: format.formatDate(new Date(), 'HH:mm'),
+        // 基金特有数据
+        isFund,
+        fundTypeDisplay,
+        purchaseDateDisplay,
+        expectedReturnDisplay
       });
 
       // 初始化图表

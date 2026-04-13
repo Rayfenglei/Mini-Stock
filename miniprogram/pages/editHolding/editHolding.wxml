@@ -1,23 +1,61 @@
 <view class="container">
   <view class="form-card">
+    <!-- 持有份额 -->
     <view class="form-item">
-      <text class="form-label">持仓数量</text>
-      <input class="form-input" type="number" value="{{formData.shares}}" bindinput="onSharesChange" placeholder="请输入持仓数量" placeholder-class="placeholder" />
+      <text class="form-label">{{isFund ? '持有份额' : '持仓数量'}}</text>
+      <input class="form-input" type="digit" value="{{formData.shares}}" bindinput="onSharesChange" placeholder="请输入{{isFund ? '持有份额' : '持仓数量'}}" placeholder-class="placeholder" />
     </view>
-    
+
+    <!-- 成本价/净值 -->
     <view class="form-item">
-      <text class="form-label">持仓价格</text>
-      <input class="form-input" type="number" value="{{formData.costPrice}}" bindinput="onCostPriceChange" placeholder="请输入持仓价格" placeholder-class="placeholder" />
+      <text class="form-label">{{isFund ? '成本净值（元）' : '持仓价格（元）'}}</text>
+      <input class="form-input" type="digit" value="{{formData.costPrice}}" bindinput="onCostPriceChange" placeholder="请输入{{isFund ? '成本净值' : '持仓价格'}}" placeholder-class="placeholder" />
     </view>
-    
+
+    <!-- 持仓成本（只读） -->
     <view class="form-item">
       <text class="form-label">持仓成本</text>
       <text class="form-value">¥{{formData.costAmount}}</text>
     </view>
+
+    <!-- 基金特有字段 -->
+    <block wx:if="{{isFund}}">
+      <!-- 购买金额 -->
+      <view class="form-item">
+        <text class="form-label">购买金额（元）</text>
+        <input class="form-input" type="digit" value="{{formData.purchaseAmount}}" bindinput="onPurchaseAmountChange" placeholder="请输入购买金额" placeholder-class="placeholder" />
+        <text class="form-hint">输入金额后将自动计算持有份额</text>
+      </view>
+
+      <!-- 购买日期 -->
+      <view class="form-item">
+        <text class="form-label">购买日期</text>
+        <picker mode="date" value="{{formData.purchaseDate}}" start="2000-01-01" end="{{formData.purchaseDate}}" bindchange="onPurchaseDateChange">
+          <view class="form-picker">{{formData.purchaseDate}}</view>
+        </picker>
+      </view>
+
+      <!-- 基金类型 -->
+      <view class="form-item">
+        <text class="form-label">基金类型</text>
+        <picker mode="selector" range="{{fundTypes}}" value="{{fundTypeIndex}}" bindchange="onFundTypeChange">
+          <view class="form-picker {{formData.fundType ? '' : 'placeholder'}}">
+            {{formData.fundType || '请选择基金类型'}}
+          </view>
+        </picker>
+      </view>
+
+      <!-- 预期收益率 -->
+      <view class="form-item">
+        <text class="form-label">预期年化收益率（%）</text>
+        <input class="form-input" type="digit" value="{{formData.expectedReturn}}" bindinput="onExpectedReturnChange" placeholder="输入预期年化收益率，如 5.5" placeholder-class="placeholder" />
+        <text class="form-hint">可选填，用于收益预估计算</text>
+      </view>
+    </block>
   </view>
-  
+
   <view class="error-message" wx:if="{{errorMessage}}">{{errorMessage}}</view>
-  
+
   <view class="action-btns">
     <button class="action-btn cancel" bindtap="onCancel">取消</button>
     <button class="action-btn save" bindtap="onSave">保存</button>

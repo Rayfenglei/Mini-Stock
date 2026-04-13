@@ -77,28 +77,50 @@ Page({
       
       let totalInvestment = 0;
       let totalMarketValue = 0;
-      
+
       const stockCodes = holdings
         .filter(item => item && item.assetType === 'stock' && item.assetCode)
         .map(item => item.assetCode);
-      
+
+      const fundCodes = holdings
+        .filter(item => item && item.assetType === 'fund' && item.assetCode)
+        .map(item => item.assetCode);
+
       let quotesData = {};
+      let fundQuotesData = {};
+
       if (stockCodes.length > 0) {
         try {
           const quotesResult = await api.getBatchQuotes(stockCodes);
           quotesData = (quotesResult && quotesResult.data) || {};
         } catch (e) {
-          console.warn('获取行情失败', e);
+          console.warn('获取股票行情失败', e);
         }
       }
-      
+
+      // 获取基金行情
+      if (fundCodes.length > 0) {
+        for (const fundCode of fundCodes) {
+          try {
+            const fundResult = await api.getFundQuote(fundCode);
+            if (fundResult && fundResult.code === 0) {
+              fundQuotesData[fundCode] = fundResult.data;
+            }
+          } catch (e) {
+            console.warn(`获取基金 ${fundCode} 行情失败`, e);
+          }
+        }
+      }
+
       const processedHoldings = holdings.map(item => {
         if (!item) return null;
         const costAmount = (item.shares || 0) * (item.costPrice || 0);
-        
+
         let currentPrice = item.currentPrice || item.costPrice || 0;
         if (item.assetType === 'stock' && item.assetCode && quotesData[item.assetCode]) {
           currentPrice = quotesData[item.assetCode].currentPrice || currentPrice;
+        } else if (item.assetType === 'fund' && item.assetCode && fundQuotesData[item.assetCode]) {
+          currentPrice = fundQuotesData[item.assetCode].netValue || currentPrice;
         }
         
         const marketValue = (item.shares || 0) * currentPrice;

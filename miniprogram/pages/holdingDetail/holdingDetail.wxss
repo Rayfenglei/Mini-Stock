@@ -116,6 +116,16 @@
   color: var(--text-tertiary);
 }
 
+/* 基金类型标签 */
+.fund-type-tag {
+  padding: 8rpx 16rpx;
+  background: var(--fund-bg);
+  border-radius: 16rpx;
+  font-size: 20rpx;
+  color: var(--fund-color);
+  margin-right: 16rpx;
+}
+
 /* ---------- 价格卡片 ---------- */
 .price-card {
   margin: 24rpx 32rpx;
@@ -208,6 +218,20 @@
   font-size: 28rpx;
   font-weight: 600;
   color: var(--text-primary);
+}
+
+/* 基金信息 */
+.fund-info {
+  display: flex;
+  flex-direction: column;
+  padding-top: 24rpx;
+  border-top: 1rpx solid var(--gray-100);
+}
+
+.fund-info-label {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  margin-bottom: 8rpx;
 }
 
 /* ---------- 持仓概览卡片 ---------- */
@@ -322,6 +346,33 @@
   font-size: 30rpx;
   font-weight: 600;
   color: var(--text-primary);
+}
+
+/* 基金额外信息 */
+.fund-extra-info {
+  padding: 24rpx 32rpx;
+  border-top: 1rpx solid var(--gray-100);
+  background: var(--fund-bg);
+  margin: 0 -32rpx -28rpx;
+  border-radius: 0 0 24rpx 24rpx;
+}
+
+.extra-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 0;
+}
+
+.extra-label {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.extra-value {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--fund-color);
 }
 
 /* ---------- 交易记录卡片 ---------- */

@@ -1,6 +1,6 @@
 <view class="container">
   <view class="section-title">选择资产类型</view>
-  <asset-selector 
+  <asset-selector
     id="assetSelector"
     assetType="{{assetType}}"
     bind:change="onAssetTypeChange"
@@ -10,23 +10,66 @@
 
   <view class="section-title">持仓信息</view>
   <view class="form-card">
+    <!-- 资产名称 -->
     <view class="form-item">
-      <text class="form-label">资产名称</text>
-      <input class="form-input" placeholder="资产名称" value="{{formData.assetName}}" disabled="{{autoFilled}}" bindinput="onNameInput" />
+      <text class="form-label">{{assetType === 'fund' ? '基金名称' : '资产名称'}}</text>
+      <input class="form-input" placeholder="{{assetType === 'fund' ? '基金名称' : '资产名称'}}" value="{{formData.assetName}}" disabled="{{autoFilled}}" bindinput="onNameInput" />
     </view>
+
+    <!-- 资产代码 -->
     <view class="form-item">
-      <text class="form-label">资产代码</text>
-      <input class="form-input" placeholder="资产代码" value="{{formData.assetCode}}" disabled="{{autoFilled}}" bindinput="onCodeInput" />
-      <text class="form-hint">需添加市场前缀：沪市sh / 深市sz / 北交所bj，如 sh600000</text>
+      <text class="form-label">{{assetType === 'fund' ? '基金代码' : '资产代码'}}</text>
+      <input class="form-input" placeholder="{{assetType === 'fund' ? '输入6位基金代码' : '资产代码'}}" value="{{formData.assetCode}}" disabled="{{autoFilled}}" bindinput="onCodeInput" />
+      <text class="form-hint" wx:if="{{assetType === 'stock'}}">需添加市场前缀：沪市sh / 深市sz / 北交所bj，如 sh600000</text>
+      <text class="form-hint" wx:if="{{assetType === 'fund'}}">请输入6位数字基金代码，如 000001</text>
+      <text class="form-hint" wx:if="{{assetType === 'gold'}}">选择黄金品种：au9999 / au100g / etf518880</text>
     </view>
+
+    <!-- 基金类型选择（仅基金显示） -->
+    <view class="form-item" wx:if="{{assetType === 'fund'}}">
+      <text class="form-label">基金类型</text>
+      <picker mode="selector" range="{{fundTypes}}" value="{{fundTypeIndex}}" bindchange="onFundTypeChange">
+        <view class="form-picker {{formData.fundType ? '' : 'placeholder'}}">
+          {{formData.fundType || '请选择基金类型'}}
+        </view>
+      </picker>
+    </view>
+
+    <!-- 购买日期（仅基金显示） -->
+    <view class="form-item" wx:if="{{assetType === 'fund'}}">
+      <text class="form-label">购买日期</text>
+      <picker mode="date" value="{{formData.purchaseDate}}" start="2000-01-01" end="{{formData.purchaseDate}}" bindchange="onPurchaseDateChange">
+        <view class="form-picker">{{formData.purchaseDate}}</view>
+      </picker>
+    </view>
+
+    <!-- 购买金额（仅基金显示） -->
+    <view class="form-item" wx:if="{{assetType === 'fund'}}">
+      <text class="form-label">购买金额（元）</text>
+      <input class="form-input" type="digit" placeholder="输入购买金额" value="{{formData.purchaseAmount}}" bindinput="onPurchaseAmountInput" />
+      <text class="form-hint">输入金额后将自动计算持有份额</text>
+    </view>
+
+    <!-- 持有份额 -->
     <view class="form-item">
       <text class="form-label">{{assetType === 'gold' ? '持有克数' : '持有份额'}}</text>
       <input class="form-input" type="digit" placeholder="{{assetType === 'gold' ? '输入克数' : '输入份额'}}" value="{{formData.shares}}" bindinput="onSharesInput" />
     </view>
+
+    <!-- 成本价/净值 -->
     <view class="form-item">
-      <text class="form-label">成本价（元）</text>
-      <input class="form-input" type="digit" placeholder="输入成本价" value="{{formData.costPrice}}" bindinput="onPriceInput" />
+      <text class="form-label">{{assetType === 'fund' ? '单位净值（元）' : '成本价（元）'}}</text>
+      <input class="form-input" type="digit" placeholder="{{assetType === 'fund' ? '输入单位净值' : '输入成本价'}}" value="{{formData.costPrice}}" bindinput="onPriceInput" />
     </view>
+
+    <!-- 预期收益率（仅基金显示） -->
+    <view class="form-item" wx:if="{{assetType === 'fund'}}">
+      <text class="form-label">预期年化收益率（%）</text>
+      <input class="form-input" type="digit" placeholder="输入预期年化收益率，如 5.5" value="{{formData.expectedReturn}}" bindinput="onExpectedReturnInput" />
+      <text class="form-hint">可选填，用于收益预估计算</text>
+    </view>
+
+    <!-- 持仓成本（自动计算） -->
     <view class="form-item readonly">
       <text class="form-label">持仓成本</text>
       <text class="form-value">¥{{costAmountDisplay}}（自动计算）</text>

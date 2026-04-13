@@ -10,26 +10,48 @@ Page({
       assetName: '',
       assetCode: '',
       shares: '',
-      costPrice: ''
+      costPrice: '',
+      purchaseDate: '',
+      expectedReturn: '',
+      fundType: '',
+      purchaseAmount: ''
     },
     autoFilled: false,
-    costAmountDisplay: '0.00'
+    costAmountDisplay: '0.00',
+    fundTypes: ['股票型', '债券型', '混合型', '指数型', '货币型', 'QDII', 'FOF'],
+    fundTypeIndex: -1,
+    minDate: new Date(2000, 0, 1).getTime(),
+    maxDate: new Date().getTime()
   },
 
   onLoad(options) {
     const type = options.type || 'stock';
-    this.setData({ 
+    const today = format.formatDate(new Date(), 'YYYY-MM-DD');
+    this.setData({
       accountId: options.accountId || '',
-      assetType: type
+      assetType: type,
+      'formData.purchaseDate': today
     });
   },
 
   onAssetTypeChange(e) {
+    const type = e.detail.type;
+    const today = format.formatDate(new Date(), 'YYYY-MM-DD');
     this.setData({
-      assetType: e.detail.type,
+      assetType: type,
       autoFilled: false,
-      formData: { assetName: '', assetCode: '', shares: '', costPrice: '' },
-      costAmountDisplay: '0.00'
+      formData: {
+        assetName: '',
+        assetCode: '',
+        shares: '',
+        costPrice: '',
+        purchaseDate: today,
+        expectedReturn: '',
+        fundType: '',
+        purchaseAmount: ''
+      },
+      costAmountDisplay: '0.00',
+      fundTypeIndex: -1
     });
   },
 
@@ -52,13 +74,13 @@ Page({
         codeWithPrefix = prefix + keyword;
       }
       const result = await api.getStockQuote(codeWithPrefix);
-      if (result) {
+      if (result && result.code === 0) {
         const selector = this.selectComponent('#assetSelector');
         selector.updateResults([{
           code: codeWithPrefix,
-          name: result.name,
-          price: result.currentPrice,
-          change: result.changePercent
+          name: result.data.name,
+          price: result.data.currentPrice,
+          change: result.data.changePercent
         }]);
       }
     } catch (error) {
@@ -69,13 +91,13 @@ Page({
   async searchFund(keyword) {
     try {
       const result = await api.getFundQuote(keyword);
-      if (result) {
+      if (result && result.code === 0) {
         const selector = this.selectComponent('#assetSelector');
         selector.updateResults([{
           code: keyword,
-          name: result.name,
-          price: result.netValue,
-          change: result.estimateRate
+          name: result.data.name,
+          price: result.data.netValue,
+          change: result.data.estimateRate
         }]);
       }
     } catch (error) {
@@ -88,6 +110,7 @@ Page({
     this.setData({
       'formData.assetName': item.name,
       'formData.assetCode': item.code,
+      'formData.costPrice': item.price ? item.price.toString() : '',
       autoFilled: true
     });
     this.calculateCostAmount();
@@ -111,6 +134,35 @@ Page({
     this.calculateCostAmount();
   },
 
+  onPurchaseAmountInput(e) {
+    const amount = e.detail.value;
+    this.setData({ 'formData.purchaseAmount': amount });
+    // 如果输入了购买金额和成本价，自动计算份额
+    const { costPrice } = this.data.formData;
+    if (amount && costPrice && parseFloat(costPrice) > 0) {
+      const shares = (parseFloat(amount) / parseFloat(costPrice)).toFixed(2);
+      this.setData({ 'formData.shares': shares });
+      this.calculateCostAmount();
+    }
+  },
+
+  onPurchaseDateChange(e) {
+    this.setData({ 'formData.purchaseDate': e.detail.value });
+  },
+
+  onExpectedReturnInput(e) {
+    this.setData({ 'formData.expectedReturn': e.detail.value });
+  },
+
+  onFundTypeChange(e) {
+    const index = parseInt(e.detail.value);
+    const fundType = this.data.fundTypes[index];
+    this.setData({
+      fundTypeIndex: index,
+      'formData.fundType': fundType
+    });
+  },
+
   calculateCostAmount() {
     const { shares, costPrice } = this.data.formData;
     const sharesNum = parseFloat(shares) || 0;
@@ -132,14 +184,25 @@ Page({
 
     try {
       wx.showLoading({ title: '添加中...' });
-      await api.addHolding({
+
+      const submitData = {
         accountId,
         assetType,
         assetCode: formData.assetCode,
         assetName: formData.assetName,
         shares: parseFloat(formData.shares),
         costPrice: parseFloat(formData.costPrice)
-      });
+      };
+
+      // 基金特有字段
+      if (assetType === 'fund') {
+        submitData.purchaseDate = formData.purchaseDate;
+        submitData.expectedReturn = formData.expectedReturn ? parseFloat(formData.expectedReturn) : null;
+        submitData.fundType = formData.fundType || null;
+        submitData.purchaseAmount = formData.purchaseAmount ? parseFloat(formData.purchaseAmount) : null;
+      }
+
+      await api.addHolding(submitData);
       wx.hideLoading();
       wx.showToast({ title: '添加成功', icon: 'success' });
       setTimeout(() => {

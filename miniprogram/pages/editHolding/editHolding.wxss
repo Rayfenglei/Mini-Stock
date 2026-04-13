@@ -49,6 +49,26 @@
   color: #999;
 }
 
+.form-hint {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 8rpx;
+  display: block;
+  line-height: 1.4;
+}
+
+.form-picker {
+  font-size: 26rpx;
+  color: #333;
+  text-align: right;
+  flex: 1;
+  padding-left: 20rpx;
+}
+
+.form-picker.placeholder {
+  color: #999;
+}
+
 .error-message {
   color: #ff4d4f;
   font-size: 22rpx;
