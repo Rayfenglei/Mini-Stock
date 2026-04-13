@@ -112,27 +112,6 @@
     </view>
   </view>
 
-  <!-- 走势图 -->
-  <view class="chart-card card">
-    <view class="chart-header">
-      <text class="chart-title">价格走势</text>
-      <view class="time-tabs">
-        <view 
-          class="time-tab {{timeIndex === index ? 'active' : ''}}" 
-          wx:for="{{timeRanges}}" 
-          wx:key="*this"
-          bindtap="onTimeChange"
-          data-index="{{index}}"
-        >
-          {{item}}
-        </view>
-      </view>
-    </view>
-    <view class="chart-container">
-      <canvas type="2d" id="priceChart" class="chart-canvas"></canvas>
-    </view>
-  </view>
-
   <!-- 交易记录 -->
   <view class="transaction-card card">
     <view class="card-header">
