@@ -1,6 +1,7 @@
 const api = require('../../utils/api');
 const validator = require('../../utils/validator');
 const format = require('../../utils/format');
+const cache = require('../../utils/cache');
 
 Page({
   data: {
@@ -22,6 +23,8 @@ Page({
       shares: '',
       costPrice: ''
     },
+    // 股票代码输入（纯数字，不含前缀）
+    stockInputCode: '',
     autoFilled: false,
     costAmountDisplay: '0.00',
     // 计算结果显示
@@ -40,7 +43,8 @@ Page({
     const type = options.type || 'stock';
     this.setData({
       accountId: options.accountId || '',
-      assetType: type
+      assetType: type,
+      autoFilled: false
     });
   },
 
@@ -49,6 +53,7 @@ Page({
     this.setData({
       assetType: type,
       autoFilled: false,
+      stockInputCode: '',
       formData: { assetName: '', assetCode: '', shares: '', costPrice: '' },
       fundForm: {
         code: '',
@@ -190,6 +195,11 @@ Page({
         purchaseAmount: amount ? parseFloat(amount) : null
       });
 
+      // 清除基金持仓缓存，确保主页能显示最新数据
+      cache.removeCache(cache.generateCacheKey('holdings', { type: 'fund' }));
+      // 同时清除总资产缓存
+      cache.removeCache(cache.generateCacheKey('holdings', { type: '' }));
+
       wx.hideLoading();
       wx.showToast({ title: '添加成功', icon: 'success' });
 
@@ -291,14 +301,22 @@ Page({
   },
 
   onAssetSelect(e) {
-    const { item } = e.detail;
-    this.setData({
-      'formData.assetName': item.name,
-      'formData.assetCode': item.code,
-      'formData.costPrice': item.price ? item.price.toString() : '',
-      autoFilled: true
-    });
-    this.calculateCostAmount();
+    const { item, type } = e.detail;
+    if (type === 'gold') {
+      this.setData({
+        'formData.assetName': item.name,
+        'formData.assetCode': item.code,
+        autoFilled: true
+      });
+    } else {
+      this.setData({
+        'formData.assetName': item.name,
+        'formData.assetCode': item.code,
+        'formData.costPrice': item.price ? item.price.toString() : '',
+        autoFilled: true
+      });
+      this.calculateCostAmount();
+    }
   },
 
   onNameInput(e) {
@@ -307,6 +325,57 @@ Page({
 
   onCodeInput(e) {
     this.setData({ 'formData.assetCode': e.detail.value });
+  },
+
+  // 股票代码输入（简化版，类似基金）
+  onStockCodeInput(e) {
+    const code = e.detail.value;
+    this.setData({ stockInputCode: code });
+    if (code.length === 6) {
+      this.queryStockName(code);
+    }
+  },
+
+  // 查询股票名称
+  async queryStockName(code) {
+    try {
+      // 自动添加市场前缀
+      // 6/8/4开头 -> sh(沪市), 0/3开头 -> sz(深市), 5开头可能是sh(沪市ETF)或sz(深市ETF)
+      let codeWithPrefix = code;
+      if (!/^(sh|sz|bj)/i.test(code)) {
+        let prefix = 'sz';
+        if (code.startsWith('6') || code.startsWith('8') || code.startsWith('4')) {
+          prefix = 'sh';
+        } else if (code.startsWith('5')) {
+          // 5开头通常是沪市ETF
+          prefix = 'sh';
+        }
+        codeWithPrefix = prefix + code;
+      }
+
+      wx.showLoading({ title: '查询中...' });
+      const result = await api.getStockQuote(codeWithPrefix);
+      wx.hideLoading();
+
+      if (result && result.code === 0) {
+        // 处理可能的编码问题
+        let name = result.data.name;
+        // 如果名称包含乱码字符，尝试修复
+        if (name && name.includes('')) {
+          console.warn('股票名称包含乱码:', name);
+        }
+        this.setData({
+          'formData.assetName': name,
+          'formData.assetCode': codeWithPrefix
+        });
+      } else {
+        wx.showToast({ title: result?.message || '查询失败', icon: 'none' });
+      }
+    } catch (error) {
+      wx.hideLoading();
+      console.error('查询股票名称失败', error);
+      wx.showToast({ title: '查询失败', icon: 'none' });
+    }
   },
 
   onSharesInput(e) {
@@ -341,16 +410,23 @@ Page({
     try {
       wx.showLoading({ title: '添加中...' });
 
+      // 黄金类型设置默认值
       const submitData = {
         accountId,
         assetType,
-        assetCode: formData.assetCode,
-        assetName: formData.assetName,
+        assetCode: assetType === 'gold' ? 'gold' : formData.assetCode,
+        assetName: assetType === 'gold' ? '黄金' : formData.assetName,
         shares: parseFloat(formData.shares),
         costPrice: parseFloat(formData.costPrice)
       };
 
       await api.addHolding(submitData);
+
+      // 清除持仓相关缓存，确保主页能显示最新数据
+      const cacheKey = cache.generateCacheKey('holdings', { type: assetType });
+      cache.removeCache(cacheKey);
+      // 同时清除总资产缓存
+      cache.removeCache(cache.generateCacheKey('holdings', { type: '' }));
 
       wx.hideLoading();
       wx.showToast({ title: '添加成功', icon: 'success' });

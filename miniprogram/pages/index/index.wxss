@@ -249,6 +249,69 @@
   padding: 24rpx 32rpx 16rpx;
 }
 
+/* 头部操作区 */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+/* 刷新按钮 */
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 20rpx;
+  background: var(--bg-secondary);
+  border-radius: 24rpx;
+  transition: all 0.3s ease;
+}
+
+.refresh-btn:active {
+  background: var(--gray-100);
+  transform: scale(0.98);
+}
+
+.refresh-btn.refreshing {
+  background: var(--primary-50);
+  opacity: 0.8;
+}
+
+.refresh-icon {
+  font-size: 24rpx;
+  margin-right: 8rpx;
+}
+
+.refresh-text {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.refresh-btn.refreshing .refresh-text {
+  color: var(--primary-600);
+}
+
+/* 刷新动画 */
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.refresh-btn.refreshing .refresh-icon {
+  animation: rotate 1s linear infinite;
+}
+
+/* 缓存统计 */
+.cache-stats {
+  padding: 8rpx 32rpx;
+  text-align: right;
+}
+
+.cache-stats-text {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
 /* ---------- 资产类型切换标签 ---------- */
 .tab-nav {
   display: flex;

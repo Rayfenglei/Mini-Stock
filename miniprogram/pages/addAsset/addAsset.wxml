@@ -105,26 +105,51 @@
     </view>
   </block>
 
-  <!-- 股票/黄金添加界面 -->
-  <block wx:else>
+  <!-- 股票添加界面 -->
+  <block wx:if="{{assetType === 'stock'}}">
     <view class="section-title">持仓信息</view>
     <view class="form-card">
       <view class="form-item">
-        <text class="form-label">资产名称</text>
-        <input class="form-input" placeholder="资产名称" value="{{formData.assetName}}" disabled="{{autoFilled}}" bindinput="onNameInput" />
+        <text class="form-label">股票代码</text>
+        <input
+          class="form-input"
+          type="number"
+          maxlength="6"
+          placeholder="请输入6位股票代码"
+          value="{{stockInputCode}}"
+          bindinput="onStockCodeInput"
+        />
       </view>
+      <text class="form-hint" wx:if="{{formData.assetName}}">{{formData.assetName}}</text>
       <view class="form-item">
-        <text class="form-label">资产代码</text>
-        <input class="form-input" placeholder="资产代码" value="{{formData.assetCode}}" disabled="{{autoFilled}}" bindinput="onCodeInput" />
-        <text class="form-hint" wx:if="{{assetType === 'stock'}}">需添加市场前缀：沪市sh / 深市sz / 北交所bj，如 sh600000</text>
-        <text class="form-hint" wx:if="{{assetType === 'gold'}}">选择黄金品种：au9999 / au100g / etf518880</text>
-      </view>
-      <view class="form-item">
-        <text class="form-label">{{assetType === 'gold' ? '持有克数' : '持有份额'}}</text>
-        <input class="form-input" type="digit" placeholder="{{assetType === 'gold' ? '输入克数' : '输入份额'}}" value="{{formData.shares}}" bindinput="onSharesInput" />
+        <text class="form-label">持有份额</text>
+        <input class="form-input" type="digit" placeholder="输入份额" value="{{formData.shares}}" bindinput="onSharesInput" />
       </view>
       <view class="form-item">
         <text class="form-label">成本价（元）</text>
+        <input class="form-input" type="digit" placeholder="输入成本价" value="{{formData.costPrice}}" bindinput="onPriceInput" />
+      </view>
+      <view class="form-item readonly">
+        <text class="form-label">持仓成本</text>
+        <text class="form-value">¥{{costAmountDisplay}}（自动计算）</text>
+      </view>
+    </view>
+
+    <view class="submit-btn-wrapper">
+      <button class="btn-primary" bindtap="submitHolding">确认添加</button>
+    </view>
+  </block>
+
+  <!-- 黄金添加界面 -->
+  <block wx:if="{{assetType === 'gold'}}">
+    <view class="section-title">持仓信息</view>
+    <view class="form-card">
+      <view class="form-item">
+        <text class="form-label">持有克数</text>
+        <input class="form-input" type="digit" placeholder="输入克数" value="{{formData.shares}}" bindinput="onSharesInput" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">成本价（元/克）</text>
         <input class="form-input" type="digit" placeholder="输入成本价" value="{{formData.costPrice}}" bindinput="onPriceInput" />
       </view>
       <view class="form-item readonly">

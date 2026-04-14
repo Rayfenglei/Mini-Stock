@@ -40,17 +40,5 @@
     </view>
   </view>
 
-  <view wx:if="{{currentType === 'gold'}}" class="gold-list">
-    <view 
-      class="result-item" 
-      wx:for="{{goldOptions}}" 
-      wx:key="code"
-      bindtap="onSelect"
-      data-item="{{item}}"
-    >
-      <text class="result-name">{{item.name}}</text>
-      <text class="result-code">{{item.type}}</text>
-      <text class="result-price">¥{{item.price}}/{{item.unit}}</text>
-    </view>
-  </view>
+
 </view>

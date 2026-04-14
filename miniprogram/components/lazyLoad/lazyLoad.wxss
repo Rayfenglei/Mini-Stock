@@ -1,0 +1,95 @@
+/* 懒加载组件样式 */
+
+.lazy-load-wrapper {
+  width: 100%;
+}
+
+/* 占位符容器 */
+.placeholder-container {
+  width: 100%;
+}
+
+/* 骨架屏样式 */
+.skeleton {
+  background: var(--bg-secondary);
+  border-radius: 16rpx;
+  padding: 24rpx;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.skeleton-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.skeleton-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  background: var(--gray-200);
+  border-radius: 50%;
+  margin-right: 20rpx;
+}
+
+.skeleton-title {
+  flex: 1;
+  height: 36rpx;
+  background: var(--gray-200);
+  border-radius: 8rpx;
+}
+
+.skeleton-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.skeleton-line {
+  height: 28rpx;
+  background: var(--gray-200);
+  border-radius: 8rpx;
+}
+
+.skeleton-line:last-child {
+  width: 70%;
+}
+
+/* 简单占位符 */
+.simple-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border-radius: 16rpx;
+}
+
+.placeholder-text {
+  font-size: 28rpx;
+  color: var(--text-tertiary);
+}
+
+/* 内容容器 */
+.content-container {
+  width: 100%;
+  animation: fade-in 0.3s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -10,9 +10,9 @@ Component({
     searchKeyword: '',
     searchResults: [],
     goldOptions: [
-      { code: 'au9999', name: 'AU99.99', type: '现货黄金', price: '568.00', unit: 'g' },
-      { code: 'au100g', name: 'AU100g', type: '现货黄金', price: '565.00', unit: 'g' },
-      { code: 'etf518880', name: '黄金ETF', type: 'ETF', price: '5.68', unit: '份' }
+      { code: 'au9999', name: 'AU99.99', type: '现货黄金' },
+      { code: 'au100g', name: 'AU100g', type: '现货黄金' },
+      { code: 'etf518880', name: '黄金ETF', type: 'ETF' }
     ]
   },
 

@@ -1,14 +1,18 @@
 const cloud = require('wx-server-sdk');
 const https = require('https');
+const iconv = require('iconv-lite');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
 function httpGet(url) {
   return new Promise((resolve, reject) => {
     https.get(url, (res) => {
-      let data = '';
-      res.on('data', (chunk) => { data += chunk; });
+      let chunks = [];
+      res.on('data', (chunk) => { chunks.push(chunk); });
       res.on('end', () => {
         try {
+          // 腾讯API返回GBK编码，需要转换
+          const buffer = Buffer.concat(chunks);
+          const data = iconv.decode(buffer, 'gbk');
           resolve(data);
         } catch (e) {
           reject(e);

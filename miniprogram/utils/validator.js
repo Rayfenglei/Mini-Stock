@@ -59,20 +59,23 @@ const validateHoldingForm = (formData) => {
     errors.push('请选择资产类型');
   }
 
-  if (!formData.assetCode) {
-    errors.push('请输入资产代码');
-  } else if (!isValidAssetCode(formData.assetType, formData.assetCode)) {
-    if (formData.assetType === 'fund') {
-      errors.push('基金代码格式不正确，应为6位数字');
-    } else if (formData.assetType === 'stock') {
-      errors.push('股票代码格式不正确，需包含市场前缀如sh/sz/bj');
-    } else {
-      errors.push('资产代码格式不正确');
+  // 黄金类型不强制要求资产代码和资产名称
+  if (formData.assetType !== 'gold') {
+    if (!formData.assetCode) {
+      errors.push('请输入资产代码');
+    } else if (!isValidAssetCode(formData.assetType, formData.assetCode)) {
+      if (formData.assetType === 'fund') {
+        errors.push('基金代码格式不正确，应为6位数字');
+      } else if (formData.assetType === 'stock') {
+        errors.push('股票代码格式不正确，需包含市场前缀如sh/sz/bj');
+      } else {
+        errors.push('资产代码格式不正确');
+      }
     }
-  }
 
-  if (!formData.assetName) {
-    errors.push('请输入资产名称');
+    if (!formData.assetName) {
+      errors.push('请输入资产名称');
+    }
   }
 
   if (!formData.shares || !isValidShares(formData.shares)) {

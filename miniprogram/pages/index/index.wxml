@@ -74,10 +74,23 @@
       <text class="section-title">我的投资组合</text>
       <text class="section-subtitle">{{holdings.length}} 个持仓</text>
     </view>
-    <view class="sort-btn" bindtap="onSortTap">
-      <text class="sort-text">{{sortType === 'value' ? '按市值' : sortType === 'profit' ? '按盈亏' : '按名称'}}</text>
-      <text class="sort-icon">{{sortAsc ? '↑' : '↓'}}</text>
+    <view class="header-actions">
+      <!-- 刷新按钮 -->
+      <view class="refresh-btn {{isRefreshing ? 'refreshing' : ''}}" bindtap="onRefreshTap">
+        <text class="refresh-icon">{{isRefreshing ? '⏳' : '🔄'}}</text>
+        <text class="refresh-text">{{isRefreshing ? '刷新中' : '刷新'}}</text>
+      </view>
+      <!-- 排序按钮 -->
+      <view class="sort-btn" bindtap="onSortTap">
+        <text class="sort-text">{{sortType === 'value' ? '按市值' : sortType === 'profit' ? '按盈亏' : '按名称'}}</text>
+        <text class="sort-icon">{{sortAsc ? '↑' : '↓'}}</text>
+      </view>
     </view>
+  </view>
+
+  <!-- 缓存统计信息（开发调试用，可隐藏） -->
+  <view class="cache-stats" wx:if="{{cacheStats.totalRequests > 0}}">
+    <text class="cache-stats-text">缓存命中率: {{cacheStats.hitRateFormatted}}</text>
   </view>
 
   <!-- 资产类型切换标签 -->
@@ -127,60 +140,69 @@
       </view>
     </view>
 
-    <view 
-      class="holding-item-wrapper" 
-      wx:for="{{holdings}}" 
+    <!-- 使用懒加载组件包装持仓项 -->
+    <lazy-load
+      wx:for="{{holdings}}"
       wx:key="_id"
-      bindtouchstart="onTouchStart"
-      bindtouchmove="onTouchMove"
-      bindtouchend="onTouchEnd"
-      data-index="{{index}}"
+      id="{{item._id}}"
+      enabled="{{index >= 5}}"
+      placeholderHeight="160rpx"
+      showSkeleton="{{true}}"
+      bindload="onLazyLoad"
     >
-      <!-- 删除按钮 -->
-      <view class="delete-action" bindtap="onDeleteTap" data-id="{{item._id}}">
-        <text class="delete-text">删除</text>
-      </view>
-      
-      <!-- 持仓行 -->
-      <view 
-        class="holding-item {{item.animating ? 'animating' : ''}}"
-        style="transform: translateX({{item.translateX || 0}}px)"
-        bindtap="onHoldingTap"
-        data-id="{{item._id}}"
+      <view
+        class="holding-item-wrapper"
+        bindtouchstart="onTouchStart"
+        bindtouchmove="onTouchMove"
+        bindtouchend="onTouchEnd"
         data-index="{{index}}"
       >
-        <!-- 名称/市值列 -->
-        <view class="col name-col">
-          <view class="name-row">
-            <text class="stock-name">{{item.assetName}}</text>
-            <text class="market-tag" wx:if="{{item.market}}">{{item.market}}</text>
+        <!-- 删除按钮 -->
+        <view class="delete-action" bindtap="onDeleteTap" data-id="{{item._id}}">
+          <text class="delete-text">删除</text>
+        </view>
+
+        <!-- 持仓行 -->
+        <view
+          class="holding-item {{item.animating ? 'animating' : ''}}"
+          style="transform: translateX({{item.translateX || 0}}px)"
+          bindtap="onHoldingTap"
+          data-id="{{item._id}}"
+          data-index="{{index}}"
+        >
+          <!-- 名称/市值列 -->
+          <view class="col name-col">
+            <view class="name-row">
+              <text class="stock-name">{{item.assetName}}</text>
+              <text class="market-tag" wx:if="{{item.market}}">{{item.market}}</text>
+            </view>
+            <text class="market-value">{{item.marketValueDisplay}}</text>
           </view>
-          <text class="market-value">{{item.marketValueDisplay}}</text>
-        </view>
 
-        <!-- 持仓/可用列 -->
-        <view class="col qty-col">
-          <text class="qty-value">{{item.sharesDisplay}}</text>
-          <text class="qty-available">{{item.sharesDisplay}}</text>
-        </view>
+          <!-- 持仓/可用列 -->
+          <view class="col qty-col">
+            <text class="qty-value">{{item.sharesDisplay}}</text>
+            <text class="qty-available">{{item.sharesDisplay}}</text>
+          </view>
 
-        <!-- 现价/成本列 -->
-        <view class="col price-col">
-          <text class="current-price {{item.todayChange >= 0 ? 'up' : 'down'}}">{{item.currentPriceDisplay}}</text>
-          <text class="cost-price">{{item.costPriceDisplay}}</text>
-        </view>
+          <!-- 现价/成本列 -->
+          <view class="col price-col">
+            <text class="current-price {{item.todayChange >= 0 ? 'up' : 'down'}}">{{item.currentPriceDisplay}}</text>
+            <text class="cost-price">{{item.costPriceDisplay}}</text>
+          </view>
 
-        <!-- 浮动盈亏列 -->
-        <view class="col profit-col">
-          <text class="profit-amount {{item.profit >= 0 ? 'up' : 'down'}}">
-            {{item.profit >= 0 ? '+' : ''}}{{item.profitDisplay}}
-          </text>
-          <text class="profit-rate {{item.profitRate >= 0 ? 'up' : 'down'}}">
-            {{item.profitRate >= 0 ? '+' : ''}}{{item.profitRateDisplay}}%
-          </text>
+          <!-- 浮动盈亏列 -->
+          <view class="col profit-col">
+            <text class="profit-amount {{item.profit >= 0 ? 'up' : 'down'}}">
+              {{item.profit >= 0 ? '+' : ''}}{{item.profitDisplay}}
+            </text>
+            <text class="profit-rate {{item.profitRate >= 0 ? 'up' : 'down'}}">
+              {{item.profitRate >= 0 ? '+' : ''}}{{item.profitRateDisplay}}%
+            </text>
+          </view>
         </view>
       </view>
-    </view>
+    </lazy-load>
   </view>
 
   <!-- 空状态 -->
