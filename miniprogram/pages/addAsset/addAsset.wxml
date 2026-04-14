@@ -16,208 +16,92 @@
       <text class="error-close" bindtap="onCloseError">✕</text>
     </view>
 
-    <!-- 场景1：30天以内（自动查询） -->
-    <block wx:if="{{isWithin30Days}}">
-      <view class="section-title">基金快速添加</view>
-      <view class="form-card">
-        <!-- 基金代码 -->
-        <view class="form-item">
-          <text class="form-label">基金代码</text>
-          <input
-            class="form-input"
-            type="number"
-            maxlength="6"
-            placeholder="请输入6位基金代码"
-            value="{{fundForm.code}}"
-            bindinput="onFundCodeInput"
-          />
+    <view class="section-title">基金快速添加</view>
+    <view class="form-card">
+      <!-- 基金代码 -->
+      <view class="form-item">
+        <text class="form-label">基金代码</text>
+        <input
+          class="form-input"
+          type="number"
+          maxlength="6"
+          placeholder="请输入6位基金代码"
+          value="{{fundForm.code}}"
+          bindinput="onFundCodeInput"
+        />
+      </view>
+      <text class="form-hint" wx:if="{{fundForm.name}}">{{fundForm.name}}</text>
+
+      <!-- 持仓价值 -->
+      <view class="form-item">
+        <text class="form-label">持仓价值（元）</text>
+        <input
+          class="form-input"
+          type="digit"
+          placeholder="请输入当前持仓价值"
+          value="{{fundForm.holdingValue}}"
+          bindinput="onFundHoldingValueInput"
+        />
+      </view>
+      <text class="form-hint">根据持仓价值和当日净值自动计算份额</text>
+
+      <!-- 投资金额（可选） -->
+      <view class="form-item">
+        <text class="form-label">投资金额（元）<text class="label-optional">（可选）</text></text>
+        <input
+          class="form-input"
+          type="digit"
+          placeholder="记录实际投入金额"
+          value="{{fundForm.amount}}"
+          bindinput="onFundAmountInput"
+        />
+      </view>
+      <text class="form-hint">用于记录实际投入金额，可不填</text>
+
+      <!-- 计算按钮 -->
+      <view class="calc-btn-wrapper">
+        <button class="btn-calc" bindtap="calculateFundShares" disabled="{{loading}}">
+          <text wx:if="{{loading}}">{{loadingText}}</text>
+          <text wx:else>🔍 查询净值并计算份额</text>
+        </button>
+      </view>
+
+      <!-- 计算结果显示 -->
+      <view class="calc-result" wx:if="{{showCalcResult}}">
+        <view class="result-header">
+          <text class="result-title">计算结果</text>
         </view>
-        <text class="form-hint" wx:if="{{fundForm.name}}">{{fundForm.name}}</text>
-
-        <!-- 买入日期 -->
-        <view class="form-item">
-          <text class="form-label">买入日期</text>
-          <picker mode="date" value="{{fundForm.date}}" start="2000-01-01" end="{{maxDate}}" bindchange="onFundDateChange">
-            <view class="form-picker">{{fundForm.date}}</view>
-          </picker>
+        <view class="result-item">
+          <text class="result-label">持仓价值</text>
+          <text class="result-value">¥{{fundForm.holdingValue}}</text>
         </view>
-        <text class="form-hint date-hint">已选日期距今 {{daysDiff}} 天</text>
-
-        <!-- 投资金额 -->
-        <view class="form-item">
-          <text class="form-label">投资金额（元）</text>
-          <input
-            class="form-input"
-            type="digit"
-            placeholder="请输入投资金额"
-            value="{{fundForm.amount}}"
-            bindinput="onFundAmountInput"
-          />
+        <view class="result-item">
+          <text class="result-label">当日净值</text>
+          <text class="result-value">¥{{calcNetValue}}</text>
         </view>
-
-        <!-- 计算按钮 -->
-        <view class="calc-btn-wrapper">
-          <button class="btn-calc" bindtap="calculateFundShares" disabled="{{loading}}">
-            <text wx:if="{{loading}}">{{loadingText}}</text>
-            <text wx:else>🔍 查询净值并计算份额</text>
-          </button>
+        <view class="result-item highlight">
+          <text class="result-label">计算份额</text>
+          <text class="result-value">{{calcShares}} 份</text>
         </view>
-
-        <!-- 历史净值列表（查询失败时显示） -->
-        <view class="history-section" wx:if="{{historyList.length > 0}}">
-          <view class="history-header">
-            <text class="history-title">历史净值列表</text>
-            <text class="history-subtitle">点击选择其他日期</text>
-          </view>
-
-          <!-- 分页控件 -->
-          <view class="pagination-bar">
-            <button class="page-btn {{currentPage <= 1 ? 'disabled' : ''}}" bindtap="onPageChange" data-action="prev">上一页</button>
-            <view class="page-info">
-              <text class="page-current">{{currentPage}}</text>
-              <text class="page-separator">/</text>
-              <text class="page-total">{{totalPages}}</text>
-            </view>
-            <button class="page-btn {{currentPage >= totalPages ? 'disabled' : ''}}" bindtap="onPageChange" data-action="next">下一页</button>
-          </view>
-
-          <!-- 历史数据表格 -->
-          <view class="history-table">
-            <view class="table-header">
-              <text class="th-date">日期</text>
-              <text class="th-value">单位净值</text>
-              <text class="th-action">操作</text>
-            </view>
-            <view class="table-body">
-              <view class="table-row" wx:for="{{historyList}}" wx:key="date">
-                <text class="td-date">{{item.date}}</text>
-                <text class="td-value">{{item.netValue.toFixed(4)}}</text>
-                <text class="td-action" bindtap="onSelectHistoryDate" data-date="{{item.date}}" data-netvalue="{{item.netValue}}">选择</text>
-              </view>
-            </view>
-          </view>
-        </view>
-
-        <!-- 计算结果显示 -->
-        <view class="calc-result" wx:if="{{showCalcResult}}">
-          <view class="result-header">
-            <text class="result-title">计算结果</text>
-          </view>
-          <view class="result-item">
-            <text class="result-label">当日净值</text>
-            <text class="result-value">¥{{calcNetValue}}</text>
-          </view>
-          <view class="result-item highlight">
-            <text class="result-label">计算份额</text>
-            <text class="result-value">{{calcShares}} 份</text>
-          </view>
-        </view>
-
-        <!-- 提交按钮 -->
-        <view class="submit-btn-wrapper" wx:if="{{showCalcResult}}">
-          <button class="btn-primary" bindtap="submitFundHolding">✓ 确认添加</button>
+        <view class="formula-hint">
+          <text>计算公式：份额 = 持仓价值 ÷ 当日净值</text>
         </view>
       </view>
-    </block>
 
-    <!-- 场景2：30天以外（手动输入） -->
-    <block wx:else>
-      <view class="section-title">基金手动添加</view>
-      <view class="form-card">
-        <!-- 基金代码 -->
-        <view class="form-item">
-          <text class="form-label">基金代码</text>
-          <input
-            class="form-input"
-            type="number"
-            maxlength="6"
-            placeholder="请输入6位基金代码"
-            value="{{manualForm.code}}"
-            bindinput="onManualCodeInput"
-          />
-        </view>
-        <text class="form-hint" wx:if="{{manualForm.name}}">{{manualForm.name}}</text>
-
-        <!-- 买入日期 -->
-        <view class="form-item">
-          <text class="form-label">买入日期</text>
-          <picker mode="date" value="{{manualForm.date}}" start="2000-01-01" end="{{maxDate}}" bindchange="onManualDateChange">
-            <view class="form-picker">{{manualForm.date}}</view>
-          </picker>
-        </view>
-        <text class="form-hint date-hint warning">已选日期距今 {{daysDiff}} 天，超过30天</text>
-
-        <!-- 投资金额 -->
-        <view class="form-item">
-          <text class="form-label">投资金额（元）</text>
-          <input
-            class="form-input"
-            type="digit"
-            placeholder="请输入投资金额，如：10000.00"
-            value="{{manualForm.amount}}"
-            bindinput="onManualAmountInput"
-          />
-        </view>
-        <text class="form-hint">请输入购买时的实际投资金额</text>
-
-        <!-- 基金净值 -->
-        <view class="form-item">
-          <text class="form-label">买入净值（元）</text>
-          <input
-            class="form-input"
-            type="digit"
-            placeholder="请输入买入时的单位净值，如：1.2345"
-            value="{{manualForm.netValue}}"
-            bindinput="onManualNetValueInput"
-          />
-        </view>
-        <text class="form-hint">请查看历史交易记录或基金公告获取当日净值</text>
-
-        <!-- 实时计算结果 -->
-        <view class="calc-result manual-result" wx:if="{{showCalcResult}}">
-          <view class="result-header">
-            <text class="result-title">实时计算</text>
-          </view>
-          <view class="result-item">
-            <text class="result-label">投资金额</text>
-            <text class="result-value">¥{{manualForm.amount}}</text>
-          </view>
-          <view class="result-item">
-            <text class="result-label">买入净值</text>
-            <text class="result-value">¥{{manualForm.netValue}}</text>
-          </view>
-          <view class="result-item highlight">
-            <text class="result-label">计算份额</text>
-            <text class="result-value">{{manualForm.shares}} 份</text>
-          </view>
-          <view class="formula-hint">
-            <text>计算公式：份额 = 投资金额 ÷ 买入净值</text>
-          </view>
-        </view>
-
-        <!-- 提交按钮 -->
-        <view class="submit-btn-wrapper" wx:if="{{showCalcResult}}">
-          <button class="btn-primary" bindtap="submitManualFundHolding">✓ 确认添加</button>
-        </view>
-
-        <!-- 手动输入提示 -->
-        <view class="manual-tips">
-          <view class="tips-title">💡 如何获取历史净值？</view>
-          <view class="tips-item">1. 登录基金公司官网或第三方平台</view>
-          <view class="tips-item">2. 查看"历史净值"或"净值公告"</view>
-          <view class="tips-item">3. 找到对应日期的单位净值</view>
-          <view class="tips-item">4. 净值通常保留4位小数</view>
-        </view>
+      <!-- 提交按钮 -->
+      <view class="submit-btn-wrapper" wx:if="{{showCalcResult}}">
+        <button class="btn-primary" bindtap="submitFundHolding">✓ 确认添加</button>
       </view>
-    </block>
+    </view>
 
     <!-- 使用说明 -->
     <view class="tips-card">
       <view class="tips-title">📋 使用说明</view>
-      <view class="tips-item">• 30天内：系统自动查询净值，支持翻页查找</view>
-      <view class="tips-item">• 30天外：需手动输入净值，实时计算份额</view>
-      <view class="tips-item">• 份额计算公式：投资金额 ÷ 单位净值</view>
-      <view class="tips-item">• 计算结果保留2位小数</view>
+      <view class="tips-item">• 输入6位基金代码自动查询基金名称</view>
+      <view class="tips-item">• 输入当前持仓价值（市值）</view>
+      <view class="tips-item">• 系统自动获取当日净值并计算份额</view>
+      <view class="tips-item">• 投资金额为可选项，用于记录实际投入</view>
+      <view class="tips-item">• 计算公式：份额 = 持仓价值 ÷ 当日净值</view>
     </view>
   </block>
 
