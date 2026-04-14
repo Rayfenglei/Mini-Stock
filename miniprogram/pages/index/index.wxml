@@ -80,8 +80,33 @@
     </view>
   </view>
 
+  <!-- 资产类型切换标签 -->
+  <view class="tab-nav">
+    <view 
+      class="tab-item {{activeTab === 'stock' ? 'active' : ''}}" 
+      bindtap="onTabChange" 
+      data-type="stock"
+    >
+      <text class="tab-text">股票</text>
+    </view>
+    <view 
+      class="tab-item {{activeTab === 'fund' ? 'active' : ''}}" 
+      bindtap="onTabChange" 
+      data-type="fund"
+    >
+      <text class="tab-text">基金</text>
+    </view>
+    <view 
+      class="tab-item {{activeTab === 'gold' ? 'active' : ''}}" 
+      bindtap="onTabChange" 
+      data-type="gold"
+    >
+      <text class="tab-text">黄金</text>
+    </view>
+  </view>
+
   <!-- 持仓列表 -->
-  <view class="holdings-list" wx:if="{{holdings.length > 0}}">
+  <view class="holdings-list {{activeTab}}-content" wx:if="{{holdings.length > 0}}">
     <!-- 表头 -->
     <view class="holdings-header">
       <view class="header-col name-col">
@@ -159,13 +184,20 @@
   </view>
 
   <!-- 空状态 -->
-  <view wx:else class="empty-state">
+  <view wx:elif="{{holdings.length === 0}}" class="empty-state">
     <view class="empty-icon">📈</view>
     <text class="empty-title">暂无持仓</text>
     <text class="empty-desc">点击下方按钮添加您的第一笔投资</text>
     <button class="btn btn-primary btn-sm" style="margin-top: 40rpx; width: 240rpx;" bindtap="onAddAssetTap">
       添加资产
     </button>
+  </view>
+
+  <!-- 当前类型无持仓 -->
+  <view wx:else class="empty-state tab-empty">
+    <view class="empty-icon">📊</view>
+    <text class="empty-title">暂无{{activeTab === 'stock' ? '股票' : activeTab === 'fund' ? '基金' : '黄金'}}持仓</text>
+    <text class="empty-desc">切换到其他类型查看持仓或添加新资产</text>
   </view>
 
   <!-- 底部间距 -->

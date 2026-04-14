@@ -12,8 +12,8 @@ module.exports = {
   updateAccount: (id, data) => callFunction('updateAccount', { id, ...data }),
   deleteAccount: (id) => callFunction('deleteAccount', { id }),
 
-  getHoldings: (accountId, refresh = false) =>
-    callFunction('getHoldings', { accountId, refresh }),
+  getHoldings: (accountId, assetType, refresh = false) =>
+    callFunction('getHoldings', { accountId, assetType, refresh }),
   getHoldingById: (id) => callFunction('getHoldingById', { id }),
   addHolding: (data) => callFunction('addHolding', data),
   updateHolding: (id, data) => callFunction('updateHolding', { id, ...data }),

@@ -49,7 +49,7 @@
   "libVersion": "2.32.3",
   "cloudfunctionTemplateRoot": "",
   "condition": {},
-  "description": "股票资产管家微信小程序",
+  "description": "聚财录微信小程序",
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {},
   "packOptions": {

@@ -19,7 +19,8 @@ Page({
     currentSwipeIndex: -1,
     deleteBtnWidth: 0,
     sortType: 'value',
-    sortAsc: false
+    sortAsc: false,
+    activeTab: 'stock'
   },
 
   onLoad() {
@@ -47,8 +48,10 @@ Page({
       const app = getApp();
       const userInfo = app.globalData.userInfo || {};
       
-      const result = await api.getHoldings('', false);
-      console.log('getHoldings result:', result);
+      // 根据当前选中的标签类型查询对应数据
+      const { activeTab } = this.data;
+      const result = await api.getHoldings('', activeTab, false);
+      console.log('getHoldings result:', result, 'activeTab:', activeTab);
       
       // 处理云函数返回格式 {code: 0, data: [...]}
       let holdings = [];
@@ -160,10 +163,14 @@ Page({
       
       const totalProfit = totalMarketValue - totalInvestment;
       const totalProfitRate = totalInvestment > 0 ? (totalProfit / totalInvestment * 100) : 0;
-      
-      this.setData({ 
-        holdings: processedHoldings,
-        recentHoldings: processedHoldings.slice(0, 10),
+
+      // 应用当前排序设置
+      const sortedHoldings = this.processHoldingsWithSort(processedHoldings);
+
+      this.setData({
+        holdings: sortedHoldings,
+        recentHoldings: sortedHoldings.slice(0, 10),
+        filteredHoldings: sortedHoldings,
         totalAssetsDisplay: format.toThousands(totalMarketValue),
         totalInvestmentDisplay: format.toThousands(totalInvestment),
         totalProfitDisplay: format.toThousands(totalProfit),
@@ -171,8 +178,8 @@ Page({
         totalProfit,
         userName: userInfo.nickName || ''
       });
-      
-      console.log('持仓数据加载成功:', processedHoldings.length, '条');
+
+      console.log('持仓数据加载成功:', sortedHoldings.length, '条, 类型:', activeTab);
     } catch (error) {
       console.error('加载持仓失败', error);
       wx.showToast({ title: '加载失败: ' + (error.message || '未知错误'), icon: 'none' });
@@ -230,8 +237,11 @@ Page({
   },
 
   sortHoldings(sortType, sortAsc) {
-    const holdings = [...this.data.holdings];
-    holdings.sort((a, b) => {
+    const { holdings } = this.data;
+
+    // 对当前数据进行排序
+    const sorted = [...holdings];
+    sorted.sort((a, b) => {
       let comparison = 0;
       switch(sortType) {
         case 'value':
@@ -246,9 +256,11 @@ Page({
       }
       return sortAsc ? -comparison : comparison;
     });
-    this.setData({ 
-      holdings,
-      recentHoldings: holdings.slice(0, 10)
+
+    this.setData({
+      holdings: sorted,
+      filteredHoldings: sorted,
+      recentHoldings: sorted.slice(0, 10)
     });
   },
 
@@ -371,5 +383,38 @@ Page({
       return item;
     });
     this.setData({ recentHoldings: holdings });
+  },
+
+  onTabChange(e) {
+    const { type } = e.currentTarget.dataset;
+    if (type === this.data.activeTab) return;
+
+    this.setData({ activeTab: type });
+    // 切换标签时重新加载对应类型的数据
+    this.loadRecentHoldings();
+  },
+
+  // 处理数据并应用排序
+  processHoldingsWithSort(holdings) {
+    const { sortType, sortAsc } = this.data;
+
+    // 应用排序
+    holdings.sort((a, b) => {
+      let comparison = 0;
+      switch(sortType) {
+        case 'value':
+          comparison = (b.marketValue || 0) - (a.marketValue || 0);
+          break;
+        case 'profit':
+          comparison = (b.profit || 0) - (a.profit || 0);
+          break;
+        case 'name':
+          comparison = (a.assetName || '').localeCompare(b.assetName || '');
+          break;
+      }
+      return sortAsc ? -comparison : comparison;
+    });
+
+    return holdings;
   }
 });

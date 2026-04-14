@@ -249,6 +249,111 @@
   padding: 24rpx 32rpx 16rpx;
 }
 
+/* ---------- 资产类型切换标签 ---------- */
+.tab-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16rpx 32rpx 24rpx;
+  gap: 16rpx;
+}
+
+.tab-item {
+  flex: 1;
+  max-width: 200rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 32rpx;
+  background: var(--bg-secondary);
+  border-radius: 32rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 30rpx;
+}
+
+.tab-item.active::before {
+  opacity: 1;
+}
+
+.tab-item.active {
+  border-color: var(--primary-500);
+  box-shadow: 0 4rpx 16rpx rgba(59, 130, 246, 0.3);
+}
+
+.tab-text {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.tab-item.active .tab-text {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* 悬停效果 - 使用 active 模拟 */
+.tab-item:active {
+  transform: scale(0.98);
+  background: var(--gray-100);
+}
+
+.tab-item.active:active {
+  transform: scale(0.98);
+  background: transparent;
+}
+
+/* 响应式布局 - 小屏幕适配 */
+@media screen and (max-width: 375px) {
+  .tab-nav {
+    padding: 12rpx 24rpx 20rpx;
+    gap: 12rpx;
+  }
+  
+  .tab-item {
+    padding: 16rpx 24rpx;
+    max-width: 160rpx;
+  }
+  
+  .tab-text {
+    font-size: 26rpx;
+  }
+}
+
+/* 响应式布局 - 大屏幕适配 */
+@media screen and (min-width: 768px) {
+  .tab-nav {
+    justify-content: flex-start;
+    padding: 20rpx 32rpx 28rpx;
+  }
+  
+  .tab-item {
+    max-width: 180rpx;
+    padding: 24rpx 40rpx;
+  }
+  
+  .tab-text {
+    font-size: 30rpx;
+  }
+}
+
 .section-title-group {
   display: flex;
   flex-direction: column;
@@ -293,6 +398,38 @@
 /* ---------- 持仓列表 ---------- */
 .holdings-list {
   padding: 0 24rpx;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* 内容切换动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stock-content,
+.fund-content,
+.gold-content {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* 标签页空状态 */
+.tab-empty {
+  margin: 32rpx;
+  padding: 60rpx 48rpx;
+}
+
+.tab-empty .empty-icon {
+  width: 120rpx;
+  height: 120rpx;
+  font-size: 60rpx;
+  background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
 }
 
 /* 表头 */
