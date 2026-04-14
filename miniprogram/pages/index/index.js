@@ -347,9 +347,15 @@ Page({
       .filter(item => item && item.assetType === 'fund' && item.assetCode)
       .map(item => item.assetCode);
 
+    // 获取黄金代码列表
+    const goldCodes = allHoldings
+      .filter(item => item && item.assetType === 'gold' && item.assetCode)
+      .map(item => item.assetCode);
+
     // 获取实时行情数据
     let quotesData = {};
     let fundQuotesData = {};
+    let goldQuotesData = {};
 
     // 检查当前是否处于交易时段
     const isTrading = marketTime.isTradingTime();
@@ -394,6 +400,28 @@ Page({
       console.log(isTrading ? '交易时段：获取基金行情' : '非交易时段：使用缓存基金行情', Object.keys(fundQuotesData).length, '条');
     }
 
+    // 获取黄金行情
+    if (goldCodes.length > 0) {
+      for (const goldCode of goldCodes) {
+        try {
+          // 使用行情专用缓存策略
+          const goldCacheKey = cache.generateCacheKey('goldQuote', { code: goldCode });
+          const fetchGoldQuote = async () => {
+            const result = await api.getGoldQuote(goldCode);
+            return (result && result.code === 0) ? result.data : null;
+          };
+
+          const goldData = await cache.fetchQuoteWithCache(goldCacheKey, fetchGoldQuote);
+          if (goldData) {
+            goldQuotesData[goldCode] = goldData;
+          }
+        } catch (e) {
+          console.warn(`获取黄金 ${goldCode} 行情失败`, e);
+        }
+      }
+      console.log(isTrading ? '交易时段：获取黄金行情' : '非交易时段：使用缓存黄金行情', Object.keys(goldQuotesData).length, '条');
+    }
+
     // 计算总资产（使用实时价格）
     allHoldings.forEach(item => {
       if (!item) return;
@@ -405,6 +433,8 @@ Page({
         currentPrice = quotesData[item.assetCode].currentPrice || currentPrice;
       } else if (item.assetType === 'fund' && item.assetCode && fundQuotesData[item.assetCode]) {
         currentPrice = fundQuotesData[item.assetCode].netValue || currentPrice;
+      } else if (item.assetType === 'gold' && item.assetCode && goldQuotesData[item.assetCode]) {
+        currentPrice = goldQuotesData[item.assetCode].currentPrice || currentPrice;
       }
 
       const marketValue = (item.shares || 0) * currentPrice;
@@ -438,6 +468,7 @@ Page({
     // 构建行情数据映射
     const quotesData = {};
     const fundQuotesData = {};
+    const goldQuotesData = {};
 
     allHoldings.forEach(item => {
       if (!item || !item.assetCode) return;
@@ -445,6 +476,8 @@ Page({
         quotesData[item.assetCode] = { currentPrice: item.currentPrice };
       } else if (item.assetType === 'fund') {
         fundQuotesData[item.assetCode] = { netValue: item.currentPrice };
+      } else if (item.assetType === 'gold') {
+        goldQuotesData[item.assetCode] = { currentPrice: item.currentPrice };
       }
     });
 
@@ -457,6 +490,8 @@ Page({
         currentPrice = quotesData[item.assetCode].currentPrice || currentPrice;
       } else if (item.assetType === 'fund' && item.assetCode && fundQuotesData[item.assetCode]) {
         currentPrice = fundQuotesData[item.assetCode].netValue || currentPrice;
+      } else if (item.assetType === 'gold' && item.assetCode && goldQuotesData[item.assetCode]) {
+        currentPrice = goldQuotesData[item.assetCode].currentPrice || currentPrice;
       }
 
       const marketValue = (item.shares || 0) * currentPrice;
@@ -590,8 +625,13 @@ Page({
         .filter(item => item && item.assetType === 'fund' && item.assetCode)
         .map(item => item.assetCode);
 
+      const goldCodes = allHoldings
+        .filter(item => item && item.assetType === 'gold' && item.assetCode)
+        .map(item => item.assetCode);
+
       let quotesData = {};
       let fundQuotesData = {};
+      let goldQuotesData = {};
 
       // 检查当前是否处于交易时段
       const isTrading = marketTime.isTradingTime();
@@ -632,6 +672,27 @@ Page({
         }
       }
 
+      // 获取黄金行情
+      if (goldCodes.length > 0) {
+        for (const goldCode of goldCodes) {
+          try {
+            // 使用行情专用缓存策略
+            const goldCacheKey = cache.generateCacheKey('goldQuote', { code: goldCode });
+            const fetchGoldQuote = async () => {
+              const result = await api.getGoldQuote(goldCode);
+              return (result && result.code === 0) ? result.data : null;
+            };
+
+            const goldData = await cache.fetchQuoteWithCache(goldCacheKey, fetchGoldQuote);
+            if (goldData) {
+              goldQuotesData[goldCode] = goldData;
+            }
+          } catch (e) {
+            console.warn(`获取黄金 ${goldCode} 行情失败`, e);
+          }
+        }
+      }
+
       // 处理所有类型的数据，计算总资产
       allHoldings.forEach(item => {
         if (!item) return;
@@ -642,6 +703,8 @@ Page({
           currentPrice = quotesData[item.assetCode].currentPrice || currentPrice;
         } else if (item.assetType === 'fund' && item.assetCode && fundQuotesData[item.assetCode]) {
           currentPrice = fundQuotesData[item.assetCode].netValue || currentPrice;
+        } else if (item.assetType === 'gold' && item.assetCode && goldQuotesData[item.assetCode]) {
+          currentPrice = goldQuotesData[item.assetCode].currentPrice || currentPrice;
         }
 
         const marketValue = (item.shares || 0) * currentPrice;
@@ -660,6 +723,8 @@ Page({
           currentPrice = quotesData[item.assetCode].currentPrice || currentPrice;
         } else if (item.assetType === 'fund' && item.assetCode && fundQuotesData[item.assetCode]) {
           currentPrice = fundQuotesData[item.assetCode].netValue || currentPrice;
+        } else if (item.assetType === 'gold' && item.assetCode && goldQuotesData[item.assetCode]) {
+          currentPrice = goldQuotesData[item.assetCode].currentPrice || currentPrice;
         }
 
         const marketValue = (item.shares || 0) * currentPrice;

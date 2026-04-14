@@ -556,6 +556,38 @@
   text-align: right;
 }
 
+/* 基金列宽定义 */
+.fund-name-col {
+  width: 35%;
+  min-width: 0;
+}
+
+.fund-amount-col {
+  width: 35%;
+  text-align: center;
+}
+
+.fund-profit-col {
+  width: 30%;
+  text-align: right;
+}
+
+/* 黄金列宽定义 */
+.gold-name-col {
+  width: 40%;
+  min-width: 0;
+}
+
+.gold-weight-col {
+  width: 30%;
+  text-align: center;
+}
+
+.gold-price-col {
+  width: 30%;
+  text-align: right;
+}
+
 .holding-item-wrapper {
   position: relative;
   overflow: hidden;
@@ -677,6 +709,52 @@
 .profit-col .profit-rate {
   font-size: 26rpx;
   font-weight: 500;
+}
+
+/* 基金列表样式 */
+.fund-item .col.fund-amount-col {
+  align-items: center;
+}
+
+.fund-item .col.fund-profit-col {
+  align-items: flex-end;
+}
+
+.fund-amount {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8rpx;
+}
+
+.fund-daily-profit {
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+.fund-profit-rate {
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+/* 黄金列表样式 */
+.gold-item .col.gold-weight-col {
+  align-items: center;
+}
+
+.gold-item .col.gold-price-col {
+  align-items: flex-end;
+}
+
+.gold-weight {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.gold-price {
+  font-size: 32rpx;
+  font-weight: 600;
 }
 
 /* 涨跌颜色 */
