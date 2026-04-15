@@ -23,6 +23,16 @@ Page({
     totalProfitDisplay: '0.00',
     totalProfitRateDisplay: '0.00',
     totalProfit: 0,
+    // 各类资产统计数据
+    stockTotalDisplay: '0.00',
+    stockProfitRate: 0,
+    stockProfitRateDisplay: '0.00',
+    fundTotalDisplay: '0.00',
+    fundProfitRate: 0,
+    fundProfitRateDisplay: '0.00',
+    goldTotalDisplay: '0.00',
+    goldProfitRate: 0,
+    goldProfitRateDisplay: '0.00',
     timeRange: '本周',
     userName: '',
     userInfo: {},
@@ -343,6 +353,14 @@ Page({
     let totalInvestment = 0;
     let totalMarketValue = 0;
 
+    // 各类资产统计
+    let stockTotal = 0;
+    let stockCost = 0;
+    let fundTotal = 0;
+    let fundCost = 0;
+    let goldTotal = 0;
+    let goldCost = 0;
+
     // 获取股票代码列表
     const stockCodes = allHoldings
       .filter(item => item && item.assetType === 'stock' && item.assetCode)
@@ -454,17 +472,37 @@ Page({
 
       totalInvestment += costAmount;
       totalMarketValue += marketValue;
+
+      // 按资产类型统计
+      if (item.assetType === 'stock') {
+        stockTotal += marketValue;
+        stockCost += costAmount;
+      } else if (item.assetType === 'fund') {
+        fundTotal += marketValue;
+        fundCost += costAmount;
+      } else if (item.assetType === 'gold') {
+        goldTotal += marketValue;
+        goldCost += costAmount;
+      }
     });
 
     const totalProfit = totalMarketValue - totalInvestment;
     const totalProfitRate = totalInvestment > 0 ? (totalProfit / totalInvestment * 100) : 0;
+
+    // 计算各类资产收益率
+    const stockProfitRate = stockCost > 0 ? ((stockTotal - stockCost) / stockCost * 100) : 0;
+    const fundProfitRate = fundCost > 0 ? ((fundTotal - fundCost) / fundCost * 100) : 0;
+    const goldProfitRate = goldCost > 0 ? ((goldTotal - goldCost) / goldCost * 100) : 0;
 
     console.log('总资产计算:', {
       totalMarketValue,
       totalInvestment,
       totalProfit,
       stockCodes: stockCodes.length,
-      fundCodes: fundCodes.length
+      fundCodes: fundCodes.length,
+      stockTotal,
+      fundTotal,
+      goldTotal
     });
 
     return {
@@ -473,6 +511,16 @@ Page({
       totalProfitDisplay: format.toThousands(totalProfit),
       totalProfitRateDisplay: totalProfitRate.toFixed(2),
       totalProfit,
+      // 各类资产数据
+      stockTotalDisplay: format.toThousands(stockTotal),
+      stockProfitRate,
+      stockProfitRateDisplay: stockProfitRate.toFixed(2),
+      fundTotalDisplay: format.toThousands(fundTotal),
+      fundProfitRate,
+      fundProfitRateDisplay: fundProfitRate.toFixed(2),
+      goldTotalDisplay: format.toThousands(goldTotal),
+      goldProfitRate,
+      goldProfitRateDisplay: goldProfitRate.toFixed(2),
       fundQuotesData,
       goldQuotesData
     };

@@ -33,11 +33,48 @@
         <text class="change-rate">({{totalProfit >= 0 ? '+' : ''}}{{totalProfitRateDisplay}}%)</text>
       </view>
     </view>
-    
-    <!-- 迷你趋势图 -->
-    <view class="mini-chart">
-      <canvas type="2d" id="trendChart" class="chart-canvas"></canvas>
+
+    <!-- 各类资产统计 -->
+    <view class="asset-type-stats">
+      <!-- 股票 -->
+      <view class="asset-type-item">
+        <view class="type-header">
+          <text class="type-icon">📈</text>
+          <text class="type-name">股票</text>
+        </view>
+        <text class="type-amount">{{stockTotalDisplay}}</text>
+        <text class="type-rate {{stockProfitRate >= 0 ? 'up' : 'down'}}">
+          {{stockProfitRate >= 0 ? '+' : ''}}{{stockProfitRateDisplay}}%
+        </text>
+      </view>
+      <!-- 基金 -->
+      <view class="asset-type-item">
+        <view class="type-header">
+          <text class="type-icon">📊</text>
+          <text class="type-name">基金</text>
+        </view>
+        <text class="type-amount">{{fundTotalDisplay}}</text>
+        <text class="type-rate {{fundProfitRate >= 0 ? 'up' : 'down'}}">
+          {{fundProfitRate >= 0 ? '+' : ''}}{{fundProfitRateDisplay}}%
+        </text>
+      </view>
+      <!-- 黄金 -->
+      <view class="asset-type-item">
+        <view class="type-header">
+          <text class="type-icon">🥇</text>
+          <text class="type-name">黄金</text>
+        </view>
+        <text class="type-amount">{{goldTotalDisplay}}</text>
+        <text class="type-rate {{goldProfitRate >= 0 ? 'up' : 'down'}}">
+          {{goldProfitRate >= 0 ? '+' : ''}}{{goldProfitRateDisplay}}%
+        </text>
+      </view>
     </view>
+
+    <!-- 迷你趋势图 -->
+    <!-- <view class="mini-chart">
+      <canvas type="2d" id="trendChart" class="chart-canvas"></canvas>
+    </view> -->
   </view>
 
   <!-- 快捷操作区 -->
@@ -330,8 +367,6 @@
     <text class="empty-desc">切换到其他类型查看持仓或添加新资产</text>
   </view>
 
-  <!-- 底部间距 -->
-  <view style="height: 40rpx;"></view>
 </view>
 
 <!-- 浮动添加按钮 -->
