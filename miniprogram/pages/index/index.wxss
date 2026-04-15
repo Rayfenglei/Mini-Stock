@@ -495,27 +495,52 @@
   background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
 }
 
-/* 表头 */
+/* 表头 - 统一布局系统 */
 .holdings-header {
   display: flex;
   align-items: center;
-  padding: 20rpx 0;
+  padding: 24rpx 0;
   margin-bottom: 0;
   border-bottom: 2rpx solid var(--gray-200);
 }
 
-.header-col {
+/* 股票表头布局 - 4列 */
+.stock-header {
+  display: grid;
+  grid-template-columns: 28% 18% 24% 30%;
+  gap: 0;
+}
+
+/* 基金表头布局 - 3列 */
+.fund-header {
+  display: grid;
+  grid-template-columns: 45% 30% 25%;
+  gap: 0;
+}
+
+/* 黄金表头布局 - 3列 */
+.gold-header {
+  display: grid;
+  grid-template-columns: 40% 30% 30%;
+  gap: 0;
+}
+
+/* 表头单元格 */
+.header-cell {
   display: flex;
   align-items: center;
+  font-size: 26rpx;
+}
+
+.header-name {
   justify-content: flex-start;
 }
 
-.header-col.qty-col,
-.header-col.price-col {
+.header-center {
   justify-content: center;
 }
 
-.header-col.profit-col {
+.header-right {
   justify-content: flex-end;
 }
 
@@ -535,58 +560,21 @@
   margin-left: 8rpx;
 }
 
-/* 列宽定义 - 使用百分比确保对齐 */
-.name-col {
-  width: 28%;
-  min-width: 0;
-}
+/* 兼容旧样式 - 股票 */
+.name-col { width: 28%; min-width: 0; }
+.qty-col { width: 18%; text-align: center; }
+.price-col { width: 24%; text-align: center; }
+.profit-col { width: 30%; text-align: right; }
 
-.qty-col {
-  width: 18%;
-  text-align: center;
-}
+/* 兼容旧样式 - 基金 */
+.fund-name-col { width: 45%; min-width: 0; }
+.fund-amount-col { width: 30%; text-align: center; }
+.fund-profit-col { width: 25%; text-align: right; }
 
-.price-col {
-  width: 24%;
-  text-align: center;
-}
-
-.profit-col {
-  width: 30%;
-  text-align: right;
-}
-
-/* 基金列宽定义 */
-.fund-name-col {
-  width: 35%;
-  min-width: 0;
-}
-
-.fund-amount-col {
-  width: 35%;
-  text-align: center;
-}
-
-.fund-profit-col {
-  width: 30%;
-  text-align: right;
-}
-
-/* 黄金列宽定义 */
-.gold-name-col {
-  width: 40%;
-  min-width: 0;
-}
-
-.gold-weight-col {
-  width: 30%;
-  text-align: center;
-}
-
-.gold-price-col {
-  width: 30%;
-  text-align: right;
-}
+/* 兼容旧样式 - 黄金 */
+.gold-name-col { width: 40%; min-width: 0; }
+.gold-weight-col { width: 30%; text-align: center; }
+.gold-price-col { width: 30%; text-align: right; }
 
 .holding-item-wrapper {
   position: relative;
@@ -612,11 +600,10 @@
   font-weight: 600;
 }
 
+/* 列表项 - 统一布局系统 */
 .holding-item {
   position: relative;
   background: var(--bg-secondary);
-  display: flex;
-  align-items: center;
   padding: 28rpx 0;
   z-index: 2;
   will-change: transform;
@@ -631,7 +618,138 @@
   border-bottom: 1rpx solid var(--gray-200);
 }
 
-/* 列样式 */
+/* 股票列表项 - 4列网格 */
+.stock-item {
+  display: grid;
+  grid-template-columns: 28% 18% 24% 30%;
+  gap: 0;
+  align-items: center;
+}
+
+/* 基金列表项 - 3列网格 */
+.fund-item {
+  display: grid;
+  grid-template-columns: 45% 30% 25%;
+  gap: 0;
+  align-items: center;
+}
+
+/* 黄金列表项 - 3列网格 */
+.gold-item {
+  display: grid;
+  grid-template-columns: 40% 30% 30%;
+  gap: 0;
+  align-items: center;
+}
+
+/* 单元格基础样式 */
+.cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0 8rpx;
+}
+
+.cell-name {
+  align-items: flex-start;
+  padding-left: 0;
+}
+
+.cell-center {
+  align-items: center;
+  text-align: center;
+}
+
+.cell-right {
+  align-items: flex-end;
+  text-align: right;
+  padding-right: 0;
+}
+
+/* 名称样式 - 两行截断 */
+.asset-name {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.4;
+
+  /* 核心：两行省略 */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 行数：2 */
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  word-break: break-all; /* 强制换行，避免长英文/数字不折行 */
+}
+
+/* 名称行（带标签） */
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  max-width: 100%;
+  margin-bottom: 8rpx;
+}
+
+.name-row .asset-name {
+  flex: 1; /* 占满剩余空间，最稳定 */
+  min-width: 0;
+}
+
+.market-tag {
+  font-size: 20rpx;
+  color: var(--primary-500);
+  border: 1rpx solid var(--primary-200);
+  border-radius: 4rpx;
+  padding: 2rpx 6rpx;
+  flex-shrink: 0;
+}
+
+/* 数值组样式 */
+.value-group {
+  display: flex;
+  flex-direction: column;
+  align-items: inherit;
+  gap: 8rpx;
+}
+
+.amount-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+/* 主要数值 */
+.primary-value {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+/* 次要数值 */
+.secondary-value {
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+  line-height: 1.2;
+}
+
+/* 子数值（市值等） */
+.sub-value {
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+  line-height: 1.2;
+}
+
+/* 收益率数值 */
+.rate-value {
+  font-size: 32rpx;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* 兼容旧样式 */
 .col {
   display: flex;
   flex-direction: column;
@@ -647,13 +765,6 @@
   align-items: flex-end;
 }
 
-/* 名称/市值列 */
-.name-col .name-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8rpx;
-}
-
 .stock-name {
   font-size: 30rpx;
   font-weight: 500;
@@ -661,20 +772,11 @@
   margin-right: 8rpx;
 }
 
-.market-tag {
-  font-size: 20rpx;
-  color: var(--primary-500);
-  border: 1rpx solid var(--primary-200);
-  border-radius: 4rpx;
-  padding: 2rpx 6rpx;
-}
-
 .market-value {
   font-size: 26rpx;
   color: var(--text-tertiary);
 }
 
-/* 持仓/可用列 */
 .qty-col .qty-value {
   font-size: 30rpx;
   font-weight: 500;
@@ -687,7 +789,6 @@
   color: var(--text-tertiary);
 }
 
-/* 现价/成本列 */
 .price-col .current-price {
   font-size: 30rpx;
   font-weight: 500;
@@ -699,7 +800,6 @@
   color: var(--text-tertiary);
 }
 
-/* 浮动盈亏列 */
 .profit-col .profit-amount {
   font-size: 30rpx;
   font-weight: 500;
@@ -711,7 +811,7 @@
   font-weight: 500;
 }
 
-/* 基金列表样式 */
+/* 基金列表兼容样式 */
 .fund-item .col.fund-amount-col {
   align-items: center;
 }
@@ -721,10 +821,9 @@
 }
 
 .fund-amount {
-  font-size: 30rpx;
+  font-size: 26rpx;
   font-weight: 500;
   color: var(--text-primary);
-  margin-bottom: 8rpx;
 }
 
 .fund-daily-profit {
@@ -733,11 +832,11 @@
 }
 
 .fund-profit-rate {
-  font-size: 32rpx;
-  font-weight: 600;
+  font-size: 26rpx;
+  font-weight: 500;
 }
 
-/* 黄金列表样式 */
+/* 黄金列表兼容样式 */
 .gold-item .col.gold-weight-col {
   align-items: center;
 }
