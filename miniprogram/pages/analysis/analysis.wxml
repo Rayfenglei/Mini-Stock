@@ -87,19 +87,17 @@
   </view>
 
   <!-- 资产分布 -->
-  <view class="chart-card card">
-    <view class="chart-header">
-      <text class="chart-title">资产分布</text>
-      <view class="chart-legend">
-        <view class="legend-item" wx:for="{{distributionData}}" wx:key="name">
-          <view class="legend-dot" style="background: {{item.color}}"></view>
-          <text class="legend-text">{{item.name}}</text>
-        </view>
-      </view>
-    </view>
-    <view class="chart-container">
-      <canvas type="2d" id="distributionChart" class="chart-canvas"></canvas>
-    </view>
+  <view class="distribution-section">
+    <asset-distribution-chart
+      id="assetDistributionChart"
+      holdings="{{processedHoldings}}"
+      showTotal="{{true}}"
+      showCenterInfo="{{false}}"
+      centerLabel="总资产"
+      footerText="点击图例查看详情"
+      chartType="donut"
+      bind:segmentTap="onDistributionSegmentTap"
+    />
   </view>
 
   <!-- 持仓排行 -->

@@ -1,0 +1,293 @@
+/* 资产分布图表组件样式 */
+
+.asset-distribution-chart {
+  background: var(--bg-secondary, #ffffff);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: var(--shadow-sm, 0 2rpx 8rpx rgba(0, 0, 0, 0.06));
+}
+
+/* 图表标题 */
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32rpx;
+}
+
+.chart-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text-primary, #1f2937);
+}
+
+.total-value {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.total-label {
+  font-size: 22rpx;
+  color: var(--text-tertiary, #9ca3af);
+  margin-bottom: 4rpx;
+}
+
+.total-amount {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--text-primary, #1f2937);
+}
+
+/* 图表主体 */
+.chart-body {
+  display: flex;
+  align-items: center;
+  gap: 32rpx;
+}
+
+/* 图表容器 */
+.chart-container {
+  position: relative;
+  width: 280rpx;
+  height: 280rpx;
+  flex-shrink: 0;
+}
+
+.distribution-canvas {
+  width: 280rpx;
+  height: 280rpx;
+}
+
+/* 中心信息 */
+.center-info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.center-label {
+  font-size: 22rpx;
+  color: var(--text-tertiary, #9ca3af);
+  margin-bottom: 8rpx;
+}
+
+.center-value {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text-primary, #1f2937);
+}
+
+/* 图例容器 */
+.legend-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+/* 图例项 */
+.legend-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 20rpx;
+  border-radius: 16rpx;
+  background: var(--bg-primary, #f9fafb);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.legend-item.active {
+  background: var(--primary-50, #eff6ff);
+  transform: scale(1.02);
+  box-shadow: 0 4rpx 12rpx rgba(59, 130, 246, 0.15);
+}
+
+/* 图例标记 */
+.legend-marker {
+  position: relative;
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.legend-dot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.2s ease;
+}
+
+.legend-item.active .legend-dot {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+.legend-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  border: 4rpx solid;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0.6;
+  }
+}
+
+/* 图例内容 */
+.legend-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.legend-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.legend-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+}
+
+.legend-percent {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--primary-600, #3b82f6);
+}
+
+.legend-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.legend-value {
+  font-size: 24rpx;
+  color: var(--text-secondary, #6b7280);
+  font-weight: 500;
+}
+
+.legend-count {
+  font-size: 22rpx;
+  color: var(--text-tertiary, #9ca3af);
+}
+
+/* 进度条 */
+.legend-progress {
+  position: relative;
+  height: 8rpx;
+  background: var(--gray-200, #e5e7eb);
+  border-radius: 4rpx;
+  overflow: hidden;
+}
+
+.progress-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gray-200, #e5e7eb);
+  border-radius: 4rpx;
+}
+
+.progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 4rpx;
+  transition: width 0.6s ease;
+}
+
+/* 图表底部 */
+.chart-footer {
+  margin-top: 24rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid var(--gray-100, #f3f4f6);
+  text-align: center;
+}
+
+.footer-text {
+  font-size: 22rpx;
+  color: var(--text-tertiary, #9ca3af);
+}
+
+/* 响应式适配 */
+@media screen and (max-width: 375px) {
+  .chart-body {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chart-container {
+    width: 240rpx;
+    height: 240rpx;
+  }
+
+  .legend-container {
+    width: 100%;
+  }
+}
+
+/* 暗色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .asset-distribution-chart {
+    background: var(--bg-secondary-dark, #1f2937);
+  }
+
+  .chart-title,
+  .total-amount,
+  .center-value,
+  .legend-name {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .legend-item {
+    background: var(--bg-primary-dark, #111827);
+  }
+
+  .legend-item.active {
+    background: rgba(59, 130, 246, 0.2);
+  }
+
+  .legend-value {
+    color: var(--text-secondary-dark, #d1d5db);
+  }
+
+  .legend-progress {
+    background: var(--gray-700, #374151);
+  }
+
+  .progress-bg {
+    background: var(--gray-700, #374151);
+  }
+}

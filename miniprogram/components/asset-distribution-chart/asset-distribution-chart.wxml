@@ -1,0 +1,61 @@
+<view class="asset-distribution-chart">
+  <!-- 图表标题 -->
+  <view class="chart-header">
+    <text class="chart-title">资产分布</text>
+    <view class="total-value" wx:if="{{showTotal}}">
+      <text class="total-label">总资产</text>
+      <text class="total-amount">¥{{totalValueDisplay}}</text>
+    </view>
+  </view>
+
+  <!-- 图表主体区域 -->
+  <view class="chart-body">
+    <!-- 左侧：圆形图表 -->
+    <view class="chart-container">
+      <canvas type="2d" id="distributionCanvas" class="distribution-canvas"></canvas>
+      <!-- 中心信息 -->
+      <view class="center-info" wx:if="{{showCenterInfo}}">
+        <text class="center-label">{{centerLabel}}</text>
+        <text class="center-value">{{centerValue}}</text>
+      </view>
+    </view>
+
+    <!-- 右侧：图例和数据 -->
+    <view class="legend-container">
+      <view 
+        class="legend-item {{activeIndex === index ? 'active' : ''}}" 
+        wx:for="{{distributionData}}" 
+        wx:key="type"
+        data-index="{{index}}"
+        bindtap="onLegendTap"
+        bindmouseenter="onLegendHover"
+        bindmouseleave="onLegendLeave"
+      >
+        <view class="legend-marker">
+          <view class="legend-dot" style="background: {{item.color}}"></view>
+          <view class="legend-ring" style="border-color: {{item.color}}" wx:if="{{activeIndex === index}}"></view>
+        </view>
+        <view class="legend-content">
+          <view class="legend-header">
+            <text class="legend-name">{{item.name}}</text>
+            <text class="legend-percent">{{item.percent}}%</text>
+          </view>
+          <view class="legend-details">
+            <text class="legend-value">¥{{item.valueDisplay}}</text>
+            <text class="legend-count" wx:if="{{item.count}}">{{item.count}}个持仓</text>
+          </view>
+          <!-- 进度条 -->
+          <view class="legend-progress">
+            <view class="progress-bg"></view>
+            <view class="progress-fill" style="width: {{item.percent}}%; background: {{item.color}}"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部提示 -->
+  <!-- <view class="chart-footer" wx:if="{{footerText}}">
+    <text class="footer-text">{{footerText}}</text>
+  </view> -->
+</view>

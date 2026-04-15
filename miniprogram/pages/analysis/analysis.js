@@ -10,6 +10,7 @@ Page({
     trendData: [],
     distributionData: [],
     rankingList: [],
+    processedHoldings: [],
     dateRange: '',
     totalProfit: 0,
     totalProfitRate: 0,
@@ -237,6 +238,7 @@ Page({
     this.setData({
       rankingList,
       distributionData,
+      processedHoldings: holdings,
       totalProfit,
       totalProfitRate,
       todayProfit,
@@ -326,5 +328,10 @@ Page({
     }
 
     this.setData({ riskWarning });
+  },
+
+  // 资产分布图表点击事件
+  onDistributionSegmentTap(e) {
+    const { index, data } = e.detail;
   }
 });
