@@ -507,7 +507,7 @@
 /* 股票表头布局 - 4列 */
 .stock-header {
   display: grid;
-  grid-template-columns: 28% 18% 24% 30%;
+  grid-template-columns: 28% 24% 18% 30%;
   gap: 0;
 }
 
@@ -518,10 +518,10 @@
   gap: 0;
 }
 
-/* 黄金表头布局 - 3列 */
+/* 黄金表头布局 - 4列 */
 .gold-header {
   display: grid;
-  grid-template-columns: 40% 30% 30%;
+  grid-template-columns: 20% 18% 32% 30%;
   gap: 0;
 }
 
@@ -562,8 +562,8 @@
 
 /* 兼容旧样式 - 股票 */
 .name-col { width: 28%; min-width: 0; }
-.qty-col { width: 18%; text-align: center; }
-.price-col { width: 24%; text-align: center; }
+.qty-col { width: 24%; text-align: center; }
+.price-col { width: 18%; text-align: center; }
 .profit-col { width: 30%; text-align: right; }
 
 /* 兼容旧样式 - 基金 */
@@ -621,7 +621,7 @@
 /* 股票列表项 - 4列网格 */
 .stock-item {
   display: grid;
-  grid-template-columns: 28% 18% 24% 30%;
+  grid-template-columns: 28% 24% 18% 30%;
   gap: 0;
   align-items: center;
 }
@@ -634,10 +634,10 @@
   align-items: center;
 }
 
-/* 黄金列表项 - 3列网格 */
+/* 黄金列表项 - 4列网格 */
 .gold-item {
   display: grid;
-  grid-template-columns: 40% 30% 30%;
+  grid-template-columns: 20% 18% 32% 30%;
   gap: 0;
   align-items: center;
 }

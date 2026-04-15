@@ -239,6 +239,7 @@ Page({
         // 保存到全局状态
         globalState.totalAssetsData = totalAssetsData;
         globalState.allHoldings = allHoldings;
+        globalState.fundQuotesData = totalAssetsData.fundQuotesData;
         globalState.isTotalAssetsLoaded = true;
       } else {
         // 使用已加载的总资产数据
@@ -257,8 +258,9 @@ Page({
         holdings = result.data;
       }
 
-      // 处理列表数据
-      const processedHoldings = this.processHoldingsData(holdings, allHoldings);
+      // 处理列表数据（传入基金行情数据）
+      const fundQuotesData = globalState.fundQuotesData || null;
+      const processedHoldings = await this.processHoldingsData(holdings, allHoldings, fundQuotesData);
 
       // 应用排序
       const sortedHoldings = this.processHoldingsWithSort(processedHoldings);
@@ -315,7 +317,8 @@ Page({
       }
 
       // 使用已缓存的所有类型数据来处理行情
-      const processedHoldings = this.processHoldingsData(holdings, globalState.allHoldings);
+      const fundQuotesData = globalState.fundQuotesData || null;
+      const processedHoldings = await this.processHoldingsData(holdings, globalState.allHoldings, fundQuotesData);
 
       // 应用排序
       const sortedHoldings = this.processHoldingsWithSort(processedHoldings);
@@ -390,6 +393,7 @@ Page({
           };
 
           const fundData = await cache.fetchQuoteWithCache(fundCacheKey, fetchFundQuote);
+          console.log('基金行情数据:', fundCode, fundData);
           if (fundData) {
             fundQuotesData[fundCode] = fundData;
           }
@@ -432,7 +436,9 @@ Page({
       if (item.assetType === 'stock' && item.assetCode && quotesData[item.assetCode]) {
         currentPrice = quotesData[item.assetCode].currentPrice || currentPrice;
       } else if (item.assetType === 'fund' && item.assetCode && fundQuotesData[item.assetCode]) {
-        currentPrice = fundQuotesData[item.assetCode].netValue || currentPrice;
+        // 基金接口字段：netValue=昨日净值, estimateValue=今日估算净值
+        const fundData = fundQuotesData[item.assetCode];
+        currentPrice = parseFloat(fundData.estimateValue) || parseFloat(fundData.netValue) || currentPrice;
       } else if (item.assetType === 'gold' && item.assetCode && goldQuotesData[item.assetCode]) {
         currentPrice = goldQuotesData[item.assetCode].currentPrice || currentPrice;
       }
@@ -459,23 +465,47 @@ Page({
       totalInvestmentDisplay: format.toThousands(totalInvestment),
       totalProfitDisplay: format.toThousands(totalProfit),
       totalProfitRateDisplay: totalProfitRate.toFixed(2),
-      totalProfit
+      totalProfit,
+      fundQuotesData
     };
   },
 
   // 处理持仓数据
-  processHoldingsData(holdings, allHoldings) {
+  async processHoldingsData(holdings, allHoldings, externalFundQuotesData = null) {
+    // 获取基金代码列表
+    const fundCodes = holdings
+      .filter(item => item && item.assetType === 'fund' && item.assetCode)
+      .map(item => item.assetCode);
+
+    // 获取基金行情数据（如果外部没有传入）
+    let fundQuotesData = externalFundQuotesData || {};
+    if (!externalFundQuotesData && fundCodes.length > 0) {
+      for (const fundCode of fundCodes) {
+        try {
+          const fundCacheKey = cache.generateCacheKey('fundQuote', { code: fundCode });
+          const fetchFundQuote = async () => {
+            const result = await api.getFundQuote(fundCode);
+            return (result && result.code === 0) ? result.data : null;
+          };
+          const fundData = await cache.fetchQuoteWithCache(fundCacheKey, fetchFundQuote);
+          console.log('processHoldingsData 基金行情:', fundCode, fundData);
+          if (fundData) {
+            fundQuotesData[fundCode] = fundData;
+          }
+        } catch (e) {
+          console.warn(`获取基金 ${fundCode} 行情失败`, e);
+        }
+      }
+    }
+
     // 构建行情数据映射
     const quotesData = {};
-    const fundQuotesData = {};
     const goldQuotesData = {};
 
     allHoldings.forEach(item => {
       if (!item || !item.assetCode) return;
       if (item.assetType === 'stock') {
         quotesData[item.assetCode] = { currentPrice: item.currentPrice };
-      } else if (item.assetType === 'fund') {
-        fundQuotesData[item.assetCode] = { netValue: item.currentPrice };
       } else if (item.assetType === 'gold') {
         goldQuotesData[item.assetCode] = { currentPrice: item.currentPrice };
       }
@@ -486,10 +516,20 @@ Page({
       const costAmount = (item.shares || 0) * (item.costPrice || 0);
 
       let currentPrice = item.currentPrice || item.costPrice || 0;
+      let todayProfit = item.todayProfit || 0;
+
       if (item.assetType === 'stock' && item.assetCode && quotesData[item.assetCode]) {
         currentPrice = quotesData[item.assetCode].currentPrice || currentPrice;
+        todayProfit = quotesData[item.assetCode].todayProfit || todayProfit;
       } else if (item.assetType === 'fund' && item.assetCode && fundQuotesData[item.assetCode]) {
-        currentPrice = fundQuotesData[item.assetCode].netValue || currentPrice;
+        const fundData = fundQuotesData[item.assetCode];
+        console.log('基金计算:', item.assetCode, 'fundData:', fundData, 'shares:', item.shares);
+        // 基金接口字段：netValue=昨日净值, estimateValue=今日估算净值, estimateRate=估算涨跌幅
+        const yesterdayNetValue = parseFloat(fundData.netValue) || currentPrice;
+        currentPrice = parseFloat(fundData.estimateValue) || yesterdayNetValue || currentPrice;
+        // 基金计算昨日收益：(今日估算净值 - 昨日净值) * 份额
+        todayProfit = (currentPrice - yesterdayNetValue) * (item.shares || 0);
+        console.log('基金昨日收益计算:', '昨日净值:', yesterdayNetValue, '今日净值:', currentPrice, '份额:', item.shares, '收益:', todayProfit);
       } else if (item.assetType === 'gold' && item.assetCode && goldQuotesData[item.assetCode]) {
         currentPrice = goldQuotesData[item.assetCode].currentPrice || currentPrice;
       }
@@ -497,7 +537,6 @@ Page({
       const marketValue = (item.shares || 0) * currentPrice;
       const profit = marketValue - costAmount;
       const profitRate = costAmount > 0 ? (profit / costAmount * 100) : 0;
-      const todayProfit = item.todayProfit || 0;
       const todayProfitRate = marketValue > 0 ? (todayProfit / marketValue * 100) : 0;
       const todayChange = item.todayChange || 0;
       const assetTypeText = item.assetType === 'stock' ? '股票' :
@@ -663,6 +702,7 @@ Page({
             };
 
             const fundData = await cache.fetchQuoteWithCache(fundCacheKey, fetchFundQuote);
+            console.log('loadRecentHoldings 基金行情:', fundCode, fundData);
             if (fundData) {
               fundQuotesData[fundCode] = fundData;
             }
@@ -702,7 +742,9 @@ Page({
         if (item.assetType === 'stock' && item.assetCode && quotesData[item.assetCode]) {
           currentPrice = quotesData[item.assetCode].currentPrice || currentPrice;
         } else if (item.assetType === 'fund' && item.assetCode && fundQuotesData[item.assetCode]) {
-          currentPrice = fundQuotesData[item.assetCode].netValue || currentPrice;
+          // 基金接口字段：netValue=昨日净值, estimateValue=今日估算净值
+          const fundData = fundQuotesData[item.assetCode];
+          currentPrice = parseFloat(fundData.estimateValue) || parseFloat(fundData.netValue) || currentPrice;
         } else if (item.assetType === 'gold' && item.assetCode && goldQuotesData[item.assetCode]) {
           currentPrice = goldQuotesData[item.assetCode].currentPrice || currentPrice;
         }
@@ -719,10 +761,21 @@ Page({
         const costAmount = (item.shares || 0) * (item.costPrice || 0);
 
         let currentPrice = item.currentPrice || item.costPrice || 0;
+        let todayProfit = item.todayProfit || 0;
+
         if (item.assetType === 'stock' && item.assetCode && quotesData[item.assetCode]) {
           currentPrice = quotesData[item.assetCode].currentPrice || currentPrice;
+          // 股票使用接口返回的今日盈亏
+          todayProfit = quotesData[item.assetCode].todayProfit || todayProfit;
         } else if (item.assetType === 'fund' && item.assetCode && fundQuotesData[item.assetCode]) {
-          currentPrice = fundQuotesData[item.assetCode].netValue || currentPrice;
+          const fundData = fundQuotesData[item.assetCode];
+          console.log('loadRecentHoldings 基金计算:', item.assetCode, 'fundData:', fundData, 'shares:', item.shares);
+          // 基金接口字段：netValue=昨日净值, estimateValue=今日估算净值, estimateRate=估算涨跌幅
+          const yesterdayNetValue = parseFloat(fundData.netValue) || currentPrice;
+          currentPrice = parseFloat(fundData.estimateValue) || yesterdayNetValue || currentPrice;
+          // 基金计算昨日收益：(今日估算净值 - 昨日净值) * 份额
+          todayProfit = (currentPrice - yesterdayNetValue) * (item.shares || 0);
+          console.log('loadRecentHoldings 基金昨日收益:', '昨日净值:', yesterdayNetValue, '今日净值:', currentPrice, '份额:', item.shares, '收益:', todayProfit);
         } else if (item.assetType === 'gold' && item.assetCode && goldQuotesData[item.assetCode]) {
           currentPrice = goldQuotesData[item.assetCode].currentPrice || currentPrice;
         }
@@ -730,7 +783,6 @@ Page({
         const marketValue = (item.shares || 0) * currentPrice;
         const profit = marketValue - costAmount;
         const profitRate = costAmount > 0 ? (profit / costAmount * 100) : 0;
-        const todayProfit = item.todayProfit || 0;
         const todayProfitRate = marketValue > 0 ? (todayProfit / marketValue * 100) : 0;
         const todayChange = item.todayChange || 0;
         const assetTypeText = item.assetType === 'stock' ? '股票' :
@@ -764,6 +816,9 @@ Page({
 
       // 应用当前排序设置
       const sortedHoldings = this.processHoldingsWithSort(processedHoldings);
+
+      // 保存基金行情数据到全局状态
+      globalState.fundQuotesData = fundQuotesData;
 
       this.setData({
         holdings: sortedHoldings,

@@ -128,7 +128,6 @@
       </view>
       <view class="header-cell header-center">
         <text class="header-text">持仓</text>
-        <text class="header-sub">/可用</text>
       </view>
       <view class="header-cell header-center">
         <text class="header-text">现价</text>
@@ -163,8 +162,12 @@
       <view class="header-cell header-center">
         <text class="header-text">克重</text>
       </view>
+      <view class="header-cell header-center">
+        <text class="header-text">现价</text>
+        <text class="header-sub">/成本</text>
+      </view>
       <view class="header-cell header-right">
-        <text class="header-text">价格</text>
+        <text class="header-text">浮动盈亏</text>
         <text class="header-arrow">›</text>
       </view>
     </view>
@@ -209,12 +212,9 @@
             <text class="sub-value">{{item.marketValueDisplay}}</text>
           </view>
 
-          <!-- 持仓/可用列 -->
+          <!-- 持仓列 -->
           <view class="cell cell-center">
-            <view class="value-group">
-              <text class="primary-value">{{item.sharesDisplay}}</text>
-              <text class="secondary-value">{{item.sharesDisplay}}</text>
-            </view>
+            <text class="primary-value">{{item.sharesDisplay}}</text>
           </view>
 
           <!-- 现价/成本列 -->
@@ -289,9 +289,24 @@
             <text class="primary-value">{{item.sharesDisplay}}克</text>
           </view>
 
-          <!-- 价格列 -->
+          <!-- 现价/成本列 -->
+          <view class="cell cell-center">
+            <view class="value-group">
+              <text class="primary-value {{item.todayChange >= 0 ? 'up' : 'down'}}">{{item.currentPriceDisplay}}</text>
+              <text class="secondary-value">{{item.costPriceDisplay}}</text>
+            </view>
+          </view>
+
+          <!-- 浮动盈亏列 -->
           <view class="cell cell-right">
-            <text class="rate-value {{item.todayChange >= 0 ? 'up' : 'down'}}">{{item.currentPriceDisplay}}</text>
+            <view class="value-group">
+              <text class="primary-value {{item.profit >= 0 ? 'up' : 'down'}}">
+                {{item.profit >= 0 ? '+' : ''}}{{item.profitDisplay}}
+              </text>
+              <text class="secondary-value {{item.profitRate >= 0 ? 'up' : 'down'}}">
+                {{item.profitRate >= 0 ? '+' : ''}}{{item.profitRateDisplay}}%
+              </text>
+            </view>
           </view>
         </view>
       </view>
