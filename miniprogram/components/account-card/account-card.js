@@ -16,9 +16,9 @@ Component({
   methods: {
     onDataChange(newData) {
       this.setData({
-        totalAmountDisplay: Number(newData.totalAmount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-        todayProfitDisplay: Number(newData.todayProfit || 0).toFixed(2),
-        todayRateDisplay: Number(newData.todayRate || 0).toFixed(2)
+        totalAmountDisplay: Number(newData.totalAmount || 0).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 }),
+        todayProfitDisplay: Number(newData.todayProfit || 0).toFixed(3),
+        todayRateDisplay: Number(newData.todayRate || 0).toFixed(3)
       });
     },
 

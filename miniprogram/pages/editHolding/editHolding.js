@@ -69,7 +69,7 @@ Page({
 
     this.setData({
       'formData.shares': shares,
-      'formData.costAmount': costAmount.toFixed(2),
+      'formData.costAmount': costAmount.toFixed(3),
       errorMessage: ''
     });
   },
@@ -82,7 +82,7 @@ Page({
 
     this.setData({
       'formData.costPrice': costPrice,
-      'formData.costAmount': costAmount.toFixed(2),
+      'formData.costAmount': costAmount.toFixed(3),
       errorMessage: ''
     });
   },
@@ -98,11 +98,11 @@ Page({
     const costPrice = parseFloat(this.data.formData.costPrice) || 0;
     const amountNum = parseFloat(amount) || 0;
     if (costPrice > 0 && amountNum > 0) {
-      const shares = (amountNum / costPrice).toFixed(2);
+      const shares = (amountNum / costPrice).toFixed(3);
       const costAmount = amountNum;
       this.setData({
         'formData.shares': shares,
-        'formData.costAmount': costAmount.toFixed(2)
+        'formData.costAmount': costAmount.toFixed(3)
       });
     }
   },

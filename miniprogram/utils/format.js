@@ -1,4 +1,4 @@
-const toFixed = (num, digits = 2) => {
+const toFixed = (num, digits = 3) => {
   if (num === null || num === undefined) return '0';
   return Number(num).toFixed(digits);
 };
@@ -6,8 +6,8 @@ const toFixed = (num, digits = 2) => {
 const toThousands = (num) => {
   if (num === null || num === undefined) return '0';
   return Number(num).toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3
   });
 };
 

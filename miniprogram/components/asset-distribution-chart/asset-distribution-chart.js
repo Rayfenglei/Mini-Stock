@@ -175,9 +175,9 @@ Component({
     // 格式化数字为紧凑形式
     formatCompactNumber(num) {
       if (num >= 100000000) {
-        return (num / 100000000).toFixed(2) + '亿';
+        return (num / 100000000).toFixed(3) + '亿';
       } else if (num >= 10000) {
-        return (num / 10000).toFixed(2) + '万';
+        return (num / 10000).toFixed(3) + '万';
       } else {
         return format.toFixed(num);
       }

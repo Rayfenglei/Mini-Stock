@@ -229,7 +229,7 @@ Page({
       ...h,
       marketValueDisplay: format.toThousands(h.marketValue || 0),
       profitDisplay: format.toThousands(Math.abs(h.profit || 0)),
-      profitRateDisplay: (h.profitRate || 0).toFixed(2)
+      profitRateDisplay: (h.profitRate || 0).toFixed(3)
     }));
 
     // 默认按市值排序
@@ -249,11 +249,11 @@ Page({
       todayProfitRateDisplay: format.toFixed(todayProfitRate),
       bestHolding: {
         name: bestHolding.name,
-        rate: bestHolding.rate.toFixed(2)
+        rate: bestHolding.rate.toFixed(3)
       },
       worstHolding: {
         name: worstHolding.name,
-        rate: worstHolding.rate.toFixed(2)
+        rate: worstHolding.rate.toFixed(3)
       },
       holdingCount,
       profitableCount

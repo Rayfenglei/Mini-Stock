@@ -186,7 +186,7 @@
         <text class="header-sub">/昨日收益</text>
       </view>
       <view class="header-cell header-right">
-        <text class="header-text">持有收益率</text>
+        <text class="header-text">持有收益/率</text>
         <text class="header-arrow">›</text>
       </view>
     </view>
@@ -299,11 +299,16 @@
             </view>
           </view>
 
-          <!-- 持有收益率列 - 靠右 -->
+          <!-- 持有收益/率列 - 靠右 -->
           <view class="cell cell-right">
-            <text class="rate-value {{item.profitRate >= 0 ? 'up' : 'down'}}">
-              {{item.profitRate >= 0 ? '+' : ''}}{{item.profitRateDisplay}}%
-            </text>
+            <view class="value-group">
+              <text class="primary-value {{item.profit >= 0 ? 'up' : 'down'}}">
+                {{item.profit >= 0 ? '+' : ''}}{{item.profitDisplay}}
+              </text>
+              <text class="secondary-value {{item.profitRate >= 0 ? 'up' : 'down'}}">
+                {{item.profitRate >= 0 ? '+' : ''}}{{item.profitRateDisplay}}%
+              </text>
+            </view>
           </view>
         </view>
 

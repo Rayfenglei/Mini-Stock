@@ -41,7 +41,7 @@ Page({
       formData: {
         ...this.data.formData,
         shares: shares,
-        amount: amount.toFixed(2)
+        amount: amount.toFixed(3)
       },
       errorMessage: ''
     });
@@ -56,7 +56,7 @@ Page({
       formData: {
         ...this.data.formData,
         price: price,
-        amount: amount.toFixed(2)
+        amount: amount.toFixed(3)
       },
       errorMessage: ''
     });

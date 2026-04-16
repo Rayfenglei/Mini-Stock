@@ -81,8 +81,8 @@ Component({
       });
 
       ctx.textAlign = 'right';
-      ctx.fillText(maxVal.toFixed(2), padding.left - 5, padding.top + 5);
-      ctx.fillText(minVal.toFixed(2), padding.left - 5, padding.top + chartHeight);
+      ctx.fillText(maxVal.toFixed(3), padding.left - 5, padding.top + 5);
+      ctx.fillText(minVal.toFixed(3), padding.left - 5, padding.top + chartHeight);
     },
 
     drawPieChart(ctx, data, centerX, centerY, radius) {

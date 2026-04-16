@@ -243,18 +243,18 @@ Page({
       totalAssetsDisplay: format.toThousands(totalMarketValue),
       totalInvestmentDisplay: format.toThousands(totalInvestment),
       totalProfitDisplay: format.toThousands(totalProfit),
-      totalProfitRateDisplay: totalProfitRate.toFixed(2),
+      totalProfitRateDisplay: totalProfitRate.toFixed(3),
       totalProfit,
       // 各类资产数据
       stockTotalDisplay: format.toThousands(stockTotal),
       stockProfitRate,
-      stockProfitRateDisplay: stockProfitRate.toFixed(2),
+      stockProfitRateDisplay: stockProfitRate.toFixed(3),
       fundTotalDisplay: format.toThousands(fundTotal),
       fundProfitRate,
-      fundProfitRateDisplay: fundProfitRate.toFixed(2),
+      fundProfitRateDisplay: fundProfitRate.toFixed(3),
       goldTotalDisplay: format.toThousands(goldTotal),
       goldProfitRate,
-      goldProfitRateDisplay: goldProfitRate.toFixed(2)
+      goldProfitRateDisplay: goldProfitRate.toFixed(3)
     };
   },
 
@@ -554,8 +554,10 @@ Page({
       }
 
       const marketValue = (item.shares || 0) * currentPrice;
-      const profit = marketValue - costAmount;
-      const profitRate = costAmount > 0 ? (profit / costAmount * 100) : 0;
+      // 基金使用 purchaseAmount（实际购买金额）计算持有收益，其他使用 costAmount
+      const costBasis = (item.assetType === 'fund' && item.purchaseAmount) ? item.purchaseAmount : costAmount;
+      const profit = marketValue - costBasis;
+      const profitRate = costBasis > 0 ? (profit / costBasis * 100) : 0;
       const todayProfitRate = marketValue > 0 ? (todayProfit / marketValue * 100) : 0;
       const assetTypeText = item.assetType === 'stock' ? '股票' :
                             item.assetType === 'fund' ? '基金' :
@@ -565,16 +567,16 @@ Page({
         ...item,
         assetTypeText,
         sharesDisplay: item.shares ? format.toThousands(item.shares) : '0',
-        costPriceDisplay: item.costPrice ? Number(item.costPrice).toFixed(2) : '0.00',
+        costPriceDisplay: item.costPrice ? Number(item.costPrice).toFixed(3) : '0.000',
         costAmountDisplay: format.toThousands(costAmount),
         marketValueDisplay: format.toThousands(marketValue),
-        currentPriceDisplay: currentPrice ? Number(currentPrice).toFixed(2) : '0.00',
+        currentPriceDisplay: currentPrice ? Number(currentPrice).toFixed(3) : '0.000',
         profitDisplay: format.toThousands(profit),
-        profitRateDisplay: profitRate.toFixed(2),
+        profitRateDisplay: profitRate.toFixed(3),
         profit,
         profitRate,
         todayProfitDisplay: format.toThousands(todayProfit),
-        todayProfitRateDisplay: todayProfitRate.toFixed(2),
+        todayProfitRateDisplay: todayProfitRate.toFixed(3),
         todayProfit,
         todayProfitRate,
         todayChange: item.todayChange || 0,
@@ -745,18 +747,18 @@ Page({
       totalAssetsDisplay: format.toThousands(totalMarketValue),
       totalInvestmentDisplay: format.toThousands(totalInvestment),
       totalProfitDisplay: format.toThousands(totalProfit),
-      totalProfitRateDisplay: totalProfitRate.toFixed(2),
+      totalProfitRateDisplay: totalProfitRate.toFixed(3),
       totalProfit,
       // 各类资产数据
       stockTotalDisplay: format.toThousands(stockTotal),
       stockProfitRate,
-      stockProfitRateDisplay: stockProfitRate.toFixed(2),
+      stockProfitRateDisplay: stockProfitRate.toFixed(3),
       fundTotalDisplay: format.toThousands(fundTotal),
       fundProfitRate,
-      fundProfitRateDisplay: fundProfitRate.toFixed(2),
+      fundProfitRateDisplay: fundProfitRate.toFixed(3),
       goldTotalDisplay: format.toThousands(goldTotal),
       goldProfitRate,
-      goldProfitRateDisplay: goldProfitRate.toFixed(2),
+      goldProfitRateDisplay: goldProfitRate.toFixed(3),
       fundQuotesData,
       goldQuotesData
     };
@@ -850,8 +852,10 @@ Page({
       }
 
       const marketValue = (item.shares || 0) * currentPrice;
-      const profit = marketValue - costAmount;
-      const profitRate = costAmount > 0 ? (profit / costAmount * 100) : 0;
+      // 基金使用 purchaseAmount（实际购买金额）计算持有收益，其他使用 costAmount
+      const costBasis = (item.assetType === 'fund' && item.purchaseAmount) ? item.purchaseAmount : costAmount;
+      const profit = marketValue - costBasis;
+      const profitRate = costBasis > 0 ? (profit / costBasis * 100) : 0;
       const todayProfitRate = marketValue > 0 ? (todayProfit / marketValue * 100) : 0;
       const todayChange = item.todayChange || 0;
       const assetTypeText = item.assetType === 'stock' ? '股票' :
@@ -862,16 +866,16 @@ Page({
         ...item,
         assetTypeText,
         sharesDisplay: item.shares ? format.toThousands(item.shares) : '0',
-        costPriceDisplay: item.costPrice ? Number(item.costPrice).toFixed(2) : '0.00',
+        costPriceDisplay: item.costPrice ? Number(item.costPrice).toFixed(3) : '0.000',
         costAmountDisplay: format.toThousands(costAmount),
         marketValueDisplay: format.toThousands(marketValue),
-        currentPriceDisplay: currentPrice ? Number(currentPrice).toFixed(2) : '0.00',
+        currentPriceDisplay: currentPrice ? Number(currentPrice).toFixed(3) : '0.000',
         profitDisplay: format.toThousands(profit),
-        profitRateDisplay: profitRate.toFixed(2),
+        profitRateDisplay: profitRate.toFixed(3),
         profit,
         profitRate,
         todayProfitDisplay: format.toThousands(todayProfit),
-        todayProfitRateDisplay: todayProfitRate.toFixed(2),
+        todayProfitRateDisplay: todayProfitRate.toFixed(3),
         todayProfit,
         todayProfitRate,
         todayChange,
@@ -1100,8 +1104,10 @@ Page({
         }
 
         const marketValue = (item.shares || 0) * currentPrice;
-        const profit = marketValue - costAmount;
-        const profitRate = costAmount > 0 ? (profit / costAmount * 100) : 0;
+        // 基金使用 purchaseAmount（实际购买金额）计算持有收益，其他使用 costAmount
+        const costBasis = (item.assetType === 'fund' && item.purchaseAmount) ? item.purchaseAmount : costAmount;
+        const profit = marketValue - costBasis;
+        const profitRate = costBasis > 0 ? (profit / costBasis * 100) : 0;
         const todayProfitRate = marketValue > 0 ? (todayProfit / marketValue * 100) : 0;
         const todayChange = item.todayChange || 0;
         const assetTypeText = item.assetType === 'stock' ? '股票' :
@@ -1112,16 +1118,16 @@ Page({
           ...item,
           assetTypeText,
           sharesDisplay: item.shares ? format.toThousands(item.shares) : '0',
-          costPriceDisplay: item.costPrice ? Number(item.costPrice).toFixed(2) : '0.00',
+          costPriceDisplay: item.costPrice ? Number(item.costPrice).toFixed(3) : '0.000',
           costAmountDisplay: format.toThousands(costAmount),
           marketValueDisplay: format.toThousands(marketValue),
-          currentPriceDisplay: currentPrice ? Number(currentPrice).toFixed(2) : '0.00',
+          currentPriceDisplay: currentPrice ? Number(currentPrice).toFixed(3) : '0.000',
           profitDisplay: format.toThousands(profit),
-          profitRateDisplay: profitRate.toFixed(2),
+          profitRateDisplay: profitRate.toFixed(3),
           profit,
           profitRate,
           todayProfitDisplay: format.toThousands(todayProfit),
-          todayProfitRateDisplay: todayProfitRate.toFixed(2),
+          todayProfitRateDisplay: todayProfitRate.toFixed(3),
           todayProfit,
           todayProfitRate,
           todayChange,
@@ -1146,7 +1152,7 @@ Page({
         totalAssetsDisplay: format.toThousands(totalMarketValue),
         totalInvestmentDisplay: format.toThousands(totalInvestment),
         totalProfitDisplay: format.toThousands(totalProfit),
-        totalProfitRateDisplay: totalProfitRate.toFixed(2),
+        totalProfitRateDisplay: totalProfitRate.toFixed(3),
         totalProfit,
         userName: userInfo.nickName || ''
       });

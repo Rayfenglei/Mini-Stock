@@ -91,10 +91,10 @@ Page({
     });
   },
 
-  // 持仓价值输入
-  onFundHoldingValueInput(e) {
+  // 持仓份额输入
+  onFundSharesInput(e) {
     this.setData({
-      'fundForm.holdingValue': e.detail.value,
+      'fundForm.shares': e.detail.value,
       showCalcResult: false
     });
   },
@@ -113,9 +113,9 @@ Page({
     }
   },
 
-  // 计算份额 - 根据持仓价值和当天净值计算
+  // 计算持仓价值 - 根据持仓份额和当天净值计算
   async calculateFundShares() {
-    const { code, holdingValue } = this.data.fundForm;
+    const { code, shares } = this.data.fundForm;
 
     // 验证输入
     if (!this.validateFundForm()) return;
@@ -143,29 +143,30 @@ Page({
 
       const netValue = result.data.netValue;
       const fundName = result.data.name;
-      const holdingValueNum = parseFloat(holdingValue);
+      const sharesNum = parseFloat(shares);
 
-      // 计算份额：持仓价值 ÷ 净值
-      const shares = (holdingValueNum / netValue).toFixed(2);
+      // 计算持仓价值：份额 × 净值
+      const holdingValue = sharesNum * netValue;
 
       this.setData({
         'fundForm.name': fundName,
         'fundForm.netValue': netValue.toFixed(4),
-        'fundForm.shares': shares,
+        'fundForm.holdingValue': holdingValue.toFixed(3),
         showCalcResult: true,
-        calcShares: shares,
-        calcNetValue: netValue.toFixed(4)
+        calcShares: sharesNum.toFixed(3),
+        calcNetValue: netValue.toFixed(4),
+        calcHoldingValue: holdingValue.toFixed(3)
       });
 
       wx.showModal({
-        title: '份额计算成功',
-        content: `基金：${fundName}\n持仓价值：¥${holdingValueNum.toFixed(2)}\n当日净值：¥${netValue.toFixed(4)}\n计算份额：${shares} 份`,
+        title: '持仓价值计算成功',
+        content: `基金：${fundName}\n持仓份额：${sharesNum.toFixed(3)} 份\n当日净值：¥${netValue.toFixed(4)}\n持仓价值：¥${holdingValue.toFixed(3)}`,
         showCancel: false
       });
 
     } catch (error) {
       this.setData({ loading: false });
-      console.error('计算份额失败', error);
+      console.error('计算持仓价值失败', error);
       this.setData({
         errorMsg: '计算失败，请重试',
         showError: true
@@ -223,13 +224,13 @@ Page({
       errors.push('请输入正确的6位基金代码');
     }
 
-    const holdingValueNum = parseFloat(form.holdingValue);
-    if (!form.holdingValue || isNaN(holdingValueNum) || holdingValueNum <= 0) {
-      errors.push('请输入有效的持仓价值');
+    const sharesNum = parseFloat(form.shares);
+    if (!form.shares || isNaN(sharesNum) || sharesNum <= 0) {
+      errors.push('请输入有效的持仓份额');
     }
 
-    if (isSubmit && (!form.netValue || !form.shares)) {
-      errors.push('请先计算份额');
+    if (isSubmit && (!form.netValue || !form.holdingValue)) {
+      errors.push('请先计算持仓价值');
     }
 
     if (errors.length > 0) {

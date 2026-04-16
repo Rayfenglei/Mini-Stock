@@ -112,8 +112,10 @@ Page({
       const shares = holding.shares || 0;
       const marketValue = shares * currentPrice;
       const costAmount = shares * costPrice;
-      const totalProfit = marketValue - costAmount;
-      const totalProfitRate = costAmount > 0 ? (totalProfit / costAmount * 100) : 0;
+      // 基金使用 purchaseAmount（实际购买金额）计算持有收益，其他使用 costAmount
+      const costBasis = (holding.assetType === 'fund' && holding.purchaseAmount) ? holding.purchaseAmount : costAmount;
+      const totalProfit = marketValue - costBasis;
+      const totalProfitRate = costBasis > 0 ? (totalProfit / costBasis * 100) : 0;
       const todayProfit = holding.todayProfit || 0;
       const todayChange = currentPrice - (holding.preClose || costPrice);
       const todayChangeRate = holding.preClose ? ((currentPrice - holding.preClose) / holding.preClose * 100) : 0;
@@ -125,7 +127,7 @@ Page({
         ...t,
         date: format.formatDate(t.tradeDate, 'MM-DD'),
         sharesDisplay: format.toThousands(t.shares),
-        priceDisplay: Number(t.price).toFixed(2),
+        priceDisplay: Number(t.price).toFixed(3),
         amountDisplay: format.toThousands(t.amount)
       }));
 
@@ -133,7 +135,7 @@ Page({
       const isFund = holding.assetType === 'fund';
       const fundTypeDisplay = holding.fundType || '';
       const purchaseDateDisplay = holding.purchaseDate || '';
-      const expectedReturnDisplay = holding.expectedReturn ? holding.expectedReturn.toFixed(2) : '';
+      const expectedReturnDisplay = holding.expectedReturn ? holding.expectedReturn.toFixed(3) : '';
 
       this.setData({
         holding,
@@ -142,23 +144,23 @@ Page({
         // 价格数据
         currentPriceDisplay: Number(currentPrice).toFixed(4),
         todayChangeDisplay: Math.abs(todayChange).toFixed(4),
-        todayChangeRateDisplay: Math.abs(todayChangeRate).toFixed(2),
+        todayChangeRateDisplay: Math.abs(todayChangeRate).toFixed(3),
         todayChange,
         todayChangeRate,
-        openPriceDisplay: Number(holding.open || 0).toFixed(2),
-        highPriceDisplay: Number(holding.high || 0).toFixed(2),
-        lowPriceDisplay: Number(holding.low || 0).toFixed(2),
-        prevCloseDisplay: Number(holding.preClose || costPrice).toFixed(2),
+        openPriceDisplay: Number(holding.open || 0).toFixed(3),
+        highPriceDisplay: Number(holding.high || 0).toFixed(3),
+        lowPriceDisplay: Number(holding.low || 0).toFixed(3),
+        prevCloseDisplay: Number(holding.preClose || costPrice).toFixed(3),
         openPrice: holding.open || 0,
         highPrice: holding.high || 0,
         lowPrice: holding.low || 0,
         // 持仓数据
         marketValueDisplay: format.toThousands(marketValue),
         totalProfitDisplay: format.toThousands(Math.abs(totalProfit)),
-        totalProfitRateDisplay: Math.abs(totalProfitRate).toFixed(2),
+        totalProfitRateDisplay: Math.abs(totalProfitRate).toFixed(3),
         totalProfit,
         totalProfitRate,
-        costAmountDisplay: format.toThousands(costAmount),
+        costAmountDisplay: format.toThousands(isFund && holding.purchaseAmount ? holding.purchaseAmount : costAmount),
         costPriceDisplay: Number(costPrice).toFixed(4),
         sharesDisplay: format.toThousands(shares),
         todayProfitDisplay: format.toThousands(Math.abs(todayProfit)),

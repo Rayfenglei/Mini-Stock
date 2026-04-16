@@ -32,18 +32,18 @@
       </view>
       <text class="form-hint" wx:if="{{fundForm.name}}">{{fundForm.name}}</text>
 
-      <!-- 持仓价值 -->
+      <!-- 持仓份额 -->
       <view class="form-item">
-        <text class="form-label">持仓价值（元）</text>
+        <text class="form-label">持仓份额</text>
         <input
           class="form-input"
           type="digit"
-          placeholder="请输入当前持仓价值"
-          value="{{fundForm.holdingValue}}"
-          bindinput="onFundHoldingValueInput"
+          placeholder="请输入当前持仓份额"
+          value="{{fundForm.shares}}"
+          bindinput="onFundSharesInput"
         />
       </view>
-      <text class="form-hint">根据持仓价值和当日净值自动计算份额</text>
+      <text class="form-hint">根据持仓份额和当日净值自动计算持仓价值</text>
 
       <!-- 投资金额（可选） -->
       <view class="form-item">
@@ -62,7 +62,7 @@
       <view class="calc-btn-wrapper">
         <button class="btn-calc" bindtap="calculateFundShares" disabled="{{loading}}">
           <text wx:if="{{loading}}">{{loadingText}}</text>
-          <text wx:else>🔍 查询净值并计算份额</text>
+          <text wx:else>🔍 查询净值并计算价值</text>
         </button>
       </view>
 
@@ -72,19 +72,19 @@
           <text class="result-title">计算结果</text>
         </view>
         <view class="result-item">
-          <text class="result-label">持仓价值</text>
-          <text class="result-value">¥{{fundForm.holdingValue}}</text>
+          <text class="result-label">持仓份额</text>
+          <text class="result-value">{{calcShares}} 份</text>
         </view>
         <view class="result-item">
           <text class="result-label">当日净值</text>
           <text class="result-value">¥{{calcNetValue}}</text>
         </view>
         <view class="result-item highlight">
-          <text class="result-label">计算份额</text>
-          <text class="result-value">{{calcShares}} 份</text>
+          <text class="result-label">持仓价值</text>
+          <text class="result-value">¥{{calcHoldingValue}}</text>
         </view>
         <view class="formula-hint">
-          <text>计算公式：份额 = 持仓价值 ÷ 当日净值</text>
+          <text>计算公式：持仓价值 = 持仓份额 × 当日净值</text>
         </view>
       </view>
 
@@ -98,10 +98,10 @@
     <view class="tips-card">
       <view class="tips-title">📋 使用说明</view>
       <view class="tips-item">• 输入6位基金代码自动查询基金名称</view>
-      <view class="tips-item">• 输入当前持仓价值（市值）</view>
-      <view class="tips-item">• 系统自动获取当日净值并计算份额</view>
+      <view class="tips-item">• 输入当前持仓份额</view>
+      <view class="tips-item">• 系统自动获取当日净值并计算持仓价值</view>
       <view class="tips-item">• 投资金额为可选项，用于记录实际投入</view>
-      <view class="tips-item">• 计算公式：份额 = 持仓价值 ÷ 当日净值</view>
+      <view class="tips-item">• 计算公式：持仓价值 = 持仓份额 × 当日净值</view>
     </view>
   </block>
 

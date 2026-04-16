@@ -152,7 +152,7 @@ const clearAllCache = () => {
  */
 const getCacheStats = () => {
   const hitRate = cacheStats.totalRequests > 0
-    ? (cacheStats.hits / cacheStats.totalRequests * 100).toFixed(2)
+    ? (cacheStats.hits / cacheStats.totalRequests * 100).toFixed(3)
     : 0;
 
   return {
