@@ -63,7 +63,7 @@ Page({
     wx.showToast({ title: '功能开发中', icon: 'none' });
   },
 
-  goToColorSettings() {
+  goToNotificationSettings() {
     wx.showToast({ title: '功能开发中', icon: 'none' });
   },
 

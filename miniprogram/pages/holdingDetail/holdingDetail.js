@@ -277,13 +277,9 @@ Page({
     });
   },
 
-  // 卖出
-  onSellTap() {
-    this.addTransaction('sell');
-  },
-
-  // 买入
-  onBuyTap() {
+  // 交易按钮点击
+  onTradeTap() {
+    // 直接跳转到交易页面，默认买入类型
     this.addTransaction('buy');
   },
 

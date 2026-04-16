@@ -178,7 +178,6 @@
 
   <!-- 底部操作栏 -->
   <view class="bottom-actions">
-    <button class="action-btn secondary" bindtap="onSellTap">卖出</button>
-    <button class="action-btn primary" bindtap="onBuyTap">买入</button>
+    <button class="action-btn primary" bindtap="onTradeTap">交易</button>
   </view>
 </view>

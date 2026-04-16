@@ -104,8 +104,17 @@ Page({
       });
       
       wx.hideLoading();
+
+      // 设置全局标记，通知主页面需要刷新数据
+      const app = getApp();
+      if (app) {
+        app.globalData.needRefreshHoldings = true;
+        app.globalData.lastTransactionTime = Date.now();
+        console.log('交易成功，设置刷新标记');
+      }
+
       wx.showToast({ title: '提交成功', icon: 'success' });
-      
+
       setTimeout(() => {
         wx.navigateBack();
       }, 1500);

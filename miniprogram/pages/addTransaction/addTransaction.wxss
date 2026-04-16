@@ -91,11 +91,17 @@
 }
 
 .action-btn.cancel {
-  background: #f5f5f5;
-  color: #666;
+  background: #f66d3b;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .action-btn.submit {
-  background: #81C784;
+  background: #3B82F6;
   color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

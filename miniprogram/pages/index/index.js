@@ -76,6 +76,17 @@ Page({
     const marketStatus = this.updateMarketStatus();
     const now = Date.now();
 
+    // 检查是否需要刷新（交易完成后返回）
+    const app = getApp();
+    if (app && app.globalData.needRefreshHoldings) {
+      console.log('检测到交易完成标记，执行数据刷新');
+      // 清除标记
+      app.globalData.needRefreshHoldings = false;
+      // 强制刷新所有数据
+      this.forceRefreshAfterTransaction();
+      return;
+    }
+
     // 如果当前是交易时段，且距离上次刷新已经超过30秒，则刷新数据
     if (marketStatus.isTrading) {
       const lastRefresh = this.data.lastRefreshTime || 0;
@@ -90,6 +101,161 @@ Page({
 
     // 只加载当前类型的列表数据，不重新加载总资产
     this.loadListDataOnly();
+  },
+
+  // 交易完成后快速刷新数据（无提示）
+  async forceRefreshAfterTransaction() {
+    if (this.data.isRefreshing) return;
+
+    // 使用静默刷新，不显示加载状态
+    try {
+      // 清除缓存
+      const cacheKey = cache.generateCacheKey('holdings', { type: this.data.activeTab });
+      const allTypesCacheKey = cache.generateCacheKey('holdings', { type: 'all' });
+      cache.removeCache(cacheKey);
+      cache.removeCache(allTypesCacheKey);
+
+      // 获取当前类型的数据（用于列表显示）
+      const result = await api.getHoldings('', this.data.activeTab, false);
+      let holdings = [];
+      if (result && result.code === 0 && Array.isArray(result.data)) {
+        holdings = result.data;
+      } else if (Array.isArray(result)) {
+        holdings = result;
+      } else if (result && result.data) {
+        holdings = result.data;
+      }
+
+      // 获取所有类型的数据（用于计算总资产）
+      const allResult = await api.getHoldings('', '', false);
+      let allHoldings = [];
+      if (allResult && allResult.code === 0 && Array.isArray(allResult.data)) {
+        allHoldings = allResult.data;
+      } else if (Array.isArray(allResult)) {
+        allHoldings = allResult;
+      } else if (allResult && allResult.data) {
+        allHoldings = allResult.data;
+      }
+
+      // 获取股票实时行情
+      const stockCodes = allHoldings
+        .filter(item => item && item.assetType === 'stock' && item.assetCode)
+        .map(item => item.assetCode);
+
+      let stockQuotesData = {};
+      if (stockCodes.length > 0) {
+        try {
+          const quotesResult = await api.getBatchQuotes(stockCodes);
+          if (quotesResult && quotesResult.code === 0 && quotesResult.data) {
+            stockQuotesData = quotesResult.data;
+          }
+        } catch (e) {
+          console.warn('获取股票行情失败', e);
+        }
+      }
+
+      // 更新全局状态
+      globalState.allHoldings = allHoldings;
+      globalState.stockQuotesData = stockQuotesData;
+
+      // 使用行情数据快速处理列表
+      const fundQuotesData = globalState.fundQuotesData || null;
+      const goldQuotesData = globalState.goldQuotesData || null;
+      const processedHoldings = this.processHoldingsDataSync(holdings, stockQuotesData, fundQuotesData, goldQuotesData);
+      const sortedHoldings = this.processHoldingsWithSort(processedHoldings);
+
+      // 快速计算总资产（使用行情数据）
+      const totalAssetsData = this.calculateTotalAssetsSync(allHoldings, stockQuotesData, fundQuotesData, goldQuotesData);
+
+      // 更新全局状态
+      globalState.totalAssetsData = totalAssetsData;
+
+      // 更新页面数据（列表 + 总资产）
+      this.setData({
+        holdings: sortedHoldings,
+        recentHoldings: sortedHoldings.slice(0, 10),
+        ...totalAssetsData,
+        lastRefreshTime: Date.now()
+      });
+
+      console.log('交易后刷新完成，总资产:', totalAssetsData.totalAssetsDisplay);
+    } catch (error) {
+      console.error('交易后刷新失败:', error);
+      // 静默失败，不显示错误提示
+    }
+  },
+
+  // 同步计算总资产（使用传入的行情数据）
+  calculateTotalAssetsSync(allHoldings, stockQuotesData, fundQuotesData, goldQuotesData) {
+    let totalInvestment = 0;
+    let totalMarketValue = 0;
+
+    // 各类资产统计
+    let stockTotal = 0;
+    let stockCost = 0;
+    let fundTotal = 0;
+    let fundCost = 0;
+    let goldTotal = 0;
+    let goldCost = 0;
+
+    allHoldings.forEach(item => {
+      if (!item) return;
+      const costAmount = (item.shares || 0) * (item.costPrice || 0);
+
+      // 获取实时价格（使用传入的行情数据）
+      let currentPrice = item.currentPrice || item.costPrice || 0;
+      if (item.assetType === 'stock' && item.assetCode && stockQuotesData && stockQuotesData[item.assetCode]) {
+        currentPrice = stockQuotesData[item.assetCode].currentPrice || currentPrice;
+      } else if (item.assetType === 'fund' && item.assetCode && fundQuotesData && fundQuotesData[item.assetCode]) {
+        const fundData = fundQuotesData[item.assetCode];
+        currentPrice = parseFloat(fundData.estimateValue) || parseFloat(fundData.netValue) || currentPrice;
+      } else if (item.assetType === 'gold' && item.assetCode && goldQuotesData && goldQuotesData[item.assetCode]) {
+        currentPrice = goldQuotesData[item.assetCode].currentPrice || currentPrice;
+      }
+
+      const marketValue = (item.shares || 0) * currentPrice;
+
+      totalInvestment += costAmount;
+      totalMarketValue += marketValue;
+
+      // 按资产类型统计
+      if (item.assetType === 'stock') {
+        stockTotal += marketValue;
+        stockCost += costAmount;
+      } else if (item.assetType === 'fund') {
+        fundTotal += marketValue;
+        fundCost += costAmount;
+      } else if (item.assetType === 'gold') {
+        goldTotal += marketValue;
+        goldCost += costAmount;
+      }
+    });
+
+    const totalProfit = totalMarketValue - totalInvestment;
+    const totalProfitRate = totalInvestment > 0 ? (totalProfit / totalInvestment * 100) : 0;
+
+    // 计算各类资产收益率
+    const stockProfitRate = stockCost > 0 ? ((stockTotal - stockCost) / stockCost * 100) : 0;
+    const fundProfitRate = fundCost > 0 ? ((fundTotal - fundCost) / fundCost * 100) : 0;
+    const goldProfitRate = goldCost > 0 ? ((goldTotal - goldCost) / goldCost * 100) : 0;
+
+    return {
+      totalAssetsDisplay: format.toThousands(totalMarketValue),
+      totalInvestmentDisplay: format.toThousands(totalInvestment),
+      totalProfitDisplay: format.toThousands(totalProfit),
+      totalProfitRateDisplay: totalProfitRate.toFixed(2),
+      totalProfit,
+      // 各类资产数据
+      stockTotalDisplay: format.toThousands(stockTotal),
+      stockProfitRate,
+      stockProfitRateDisplay: stockProfitRate.toFixed(2),
+      fundTotalDisplay: format.toThousands(fundTotal),
+      fundProfitRate,
+      fundProfitRateDisplay: fundProfitRate.toFixed(2),
+      goldTotalDisplay: format.toThousands(goldTotal),
+      goldProfitRate,
+      goldProfitRateDisplay: goldProfitRate.toFixed(2)
+    };
   },
 
   onPullDownRefresh() {
@@ -293,8 +459,8 @@ Page({
     }
   },
 
-  // 仅加载列表数据（切换标签时使用，不重新计算总资产）
-  async loadListDataOnly() {
+  // 仅加载列表数据（切换标签或交易后使用，不重新计算总资产）
+  async loadListDataOnly(forceRefresh = false) {
     try {
       const { activeTab, isTotalAssetsLoaded } = this.data;
 
@@ -307,31 +473,47 @@ Page({
 
       // 获取当前类型的数据（仅用于列表显示）
       const cacheKey = cache.generateCacheKey('holdings', { type: activeTab });
-      const fetchData = async () => {
-        const result = await api.getHoldings('', activeTab, false);
-        return result;
-      };
 
-      const result = await cache.fetchWithCache(
-        cacheKey,
-        fetchData,
-        { forceRefresh: false }
-      );
-
-      // 处理当前类型的数据
+      // 如果是强制刷新，直接获取数据不走缓存
       let holdings = [];
-      if (result && result.code === 0 && Array.isArray(result.data)) {
-        holdings = result.data;
-      } else if (Array.isArray(result)) {
-        holdings = result;
-      } else if (result && result.data) {
-        holdings = result.data;
+      if (forceRefresh) {
+        const result = await api.getHoldings('', activeTab, false);
+        if (result && result.code === 0 && Array.isArray(result.data)) {
+          holdings = result.data;
+        } else if (Array.isArray(result)) {
+          holdings = result;
+        } else if (result && result.data) {
+          holdings = result.data;
+        }
+        // 更新缓存
+        cache.setCache(cacheKey, holdings);
+      } else {
+        const fetchData = async () => {
+          const result = await api.getHoldings('', activeTab, false);
+          return result;
+        };
+
+        const result = await cache.fetchWithCache(
+          cacheKey,
+          fetchData,
+          { forceRefresh: false }
+        );
+
+        // 处理当前类型的数据
+        if (result && result.code === 0 && Array.isArray(result.data)) {
+          holdings = result.data;
+        } else if (Array.isArray(result)) {
+          holdings = result;
+        } else if (result && result.data) {
+          holdings = result.data;
+        }
       }
 
-      // 使用已缓存的所有类型数据来处理行情
+      // 使用已缓存的行情数据快速处理列表
+      const stockQuotesData = globalState.stockQuotesData || null;
       const fundQuotesData = globalState.fundQuotesData || null;
       const goldQuotesData = globalState.goldQuotesData || null;
-      const processedHoldings = await this.processHoldingsData(holdings, globalState.allHoldings, fundQuotesData, goldQuotesData);
+      const processedHoldings = this.processHoldingsDataSync(holdings, stockQuotesData, fundQuotesData, goldQuotesData);
 
       // 应用排序
       const sortedHoldings = this.processHoldingsWithSort(processedHoldings);
@@ -346,6 +528,60 @@ Page({
     } catch (error) {
       console.error('加载列表数据失败:', error);
     }
+  },
+
+  // 同步处理持仓数据（用于快速刷新，使用传入的行情数据）
+  processHoldingsDataSync(holdings, stockQuotesData, fundQuotesData, goldQuotesData) {
+    return holdings.map(item => {
+      if (!item) return null;
+      const costAmount = (item.shares || 0) * (item.costPrice || 0);
+
+      let currentPrice = item.currentPrice || item.costPrice || 0;
+      let todayProfit = item.todayProfit || 0;
+
+      // 使用传入的行情数据
+      if (item.assetType === 'stock' && item.assetCode && stockQuotesData && stockQuotesData[item.assetCode]) {
+        const quoteData = stockQuotesData[item.assetCode];
+        currentPrice = quoteData.currentPrice || currentPrice;
+        todayProfit = quoteData.todayProfit || todayProfit;
+      } else if (item.assetType === 'fund' && item.assetCode && fundQuotesData && fundQuotesData[item.assetCode]) {
+        const fundData = fundQuotesData[item.assetCode];
+        const yesterdayNetValue = parseFloat(fundData.netValue) || currentPrice;
+        currentPrice = parseFloat(fundData.estimateValue) || yesterdayNetValue || currentPrice;
+        todayProfit = (currentPrice - yesterdayNetValue) * (item.shares || 0);
+      } else if (item.assetType === 'gold' && item.assetCode && goldQuotesData && goldQuotesData[item.assetCode]) {
+        currentPrice = goldQuotesData[item.assetCode].currentPrice || currentPrice;
+      }
+
+      const marketValue = (item.shares || 0) * currentPrice;
+      const profit = marketValue - costAmount;
+      const profitRate = costAmount > 0 ? (profit / costAmount * 100) : 0;
+      const todayProfitRate = marketValue > 0 ? (todayProfit / marketValue * 100) : 0;
+      const assetTypeText = item.assetType === 'stock' ? '股票' :
+                            item.assetType === 'fund' ? '基金' :
+                            item.assetType === 'gold' ? '黄金' : '债券';
+
+      return {
+        ...item,
+        assetTypeText,
+        sharesDisplay: item.shares ? format.toThousands(item.shares) : '0',
+        costPriceDisplay: item.costPrice ? Number(item.costPrice).toFixed(2) : '0.00',
+        costAmountDisplay: format.toThousands(costAmount),
+        marketValueDisplay: format.toThousands(marketValue),
+        currentPriceDisplay: currentPrice ? Number(currentPrice).toFixed(2) : '0.00',
+        profitDisplay: format.toThousands(profit),
+        profitRateDisplay: profitRate.toFixed(2),
+        profit,
+        profitRate,
+        todayProfitDisplay: format.toThousands(todayProfit),
+        todayProfitRateDisplay: todayProfitRate.toFixed(2),
+        todayProfit,
+        todayProfitRate,
+        todayChange: item.todayChange || 0,
+        profitBarWidth: Math.min(Math.abs(profitRate), 100),
+        isTodayUpdated: item.isTodayUpdated || false
+      };
+    }).filter(item => item !== null);
   },
 
   // 计算总资产数据（带实时行情）

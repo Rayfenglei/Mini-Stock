@@ -2,7 +2,10 @@ App({
   globalData: {
     userInfo: null,
     currentAccountId: null,
-    openid: null
+    openid: null,
+    // 交易刷新标记
+    needRefreshHoldings: false,
+    lastTransactionTime: 0
   },
 
   onLaunch() {

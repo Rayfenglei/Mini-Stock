@@ -504,7 +504,6 @@
   right: 0;
   bottom: 0;
   display: flex;
-  gap: 24rpx;
   padding: 24rpx 32rpx;
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
   background: var(--bg-secondary);
