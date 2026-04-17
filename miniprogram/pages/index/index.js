@@ -2,6 +2,7 @@ const api = require('../../utils/api');
 const format = require('../../utils/format');
 const cache = require('../../utils/cache');
 const marketTime = require('../../utils/marketTime');
+const fundRefresh = require('../../utils/fundRefresh');
 
 // 刷新防抖动配置
 const REFRESH_DEBOUNCE = 30 * 1000; // 30秒最短刷新间隔
@@ -56,6 +57,15 @@ Page({
       isTrading: false,
       isTradingDay: false,
       statusText: '未开盘'
+    },
+    // 基金刷新状态
+    fundRefreshStatus: {
+      status: 'idle',
+      lastUpdate: null,
+      nextScheduledRefresh: null,
+      isFromCache: false,
+      errorMessage: null,
+      refreshProgress: null
     }
   },
 
@@ -67,13 +77,19 @@ Page({
     });
     // 更新市场状态
     this.updateMarketStatus();
+    // 初始化基金刷新状态
+    this.updateFundRefreshStatus();
     // 首次进入页面，加载所有数据
     this.loadAllData();
+    // 启动定时刷新检查
+    this.startAutoRefreshTimer();
   },
 
   onShow() {
     // 更新市场状态
     const marketStatus = this.updateMarketStatus();
+    // 更新基金刷新状态
+    this.updateFundRefreshStatus();
     const now = Date.now();
 
     // 检查是否需要刷新（交易完成后返回）
@@ -99,8 +115,41 @@ Page({
       }
     }
 
+    // 检查是否需要自动刷新基金数据
+    if (this.data.activeTab === 'fund') {
+      this.autoRefreshFundsIfNeeded();
+    }
+
     // 只加载当前类型的列表数据，不重新加载总资产
     this.loadListDataOnly();
+  },
+
+  onHide() {
+    // 页面隐藏时停止定时器
+    this.stopAutoRefreshTimer();
+  },
+
+  onUnload() {
+    // 页面卸载时停止定时器
+    this.stopAutoRefreshTimer();
+  },
+
+  // 启动自动刷新定时器
+  startAutoRefreshTimer() {
+    // 每分钟检查一次是否需要刷新
+    this.autoRefreshTimer = setInterval(() => {
+      if (this.data.activeTab === 'fund') {
+        this.autoRefreshFundsIfNeeded();
+      }
+    }, 60 * 1000); // 每分钟检查一次
+  },
+
+  // 停止自动刷新定时器
+  stopAutoRefreshTimer() {
+    if (this.autoRefreshTimer) {
+      clearInterval(this.autoRefreshTimer);
+      this.autoRefreshTimer = null;
+    }
   },
 
   // 交易完成后快速刷新数据（无提示）
@@ -301,6 +350,10 @@ Page({
     lastRefreshTime = Date.now();
 
     try {
+      // 检查是否在基金刷新时间窗口内
+      const isInFundRefreshWindow = fundRefresh.isInRefreshWindow();
+      const fundRefreshStatus = fundRefresh.getRefreshStatus();
+
       // 清除所有相关缓存
       const cacheKey = cache.generateCacheKey('holdings', { type: this.data.activeTab });
       const allTypesCacheKey = cache.generateCacheKey('holdings', { type: 'all' });
@@ -312,16 +365,38 @@ Page({
       globalState.isTotalAssetsLoaded = false;
       globalState.allHoldings = [];
 
+      // 如果在基金刷新窗口内，执行基金数据刷新
+      if (isInFundRefreshWindow && this.data.activeTab === 'fund') {
+        await this.refreshFundData();
+      }
+
       // 重新加载所有数据
       await this.loadAllData(true);
 
-      this.setData({ lastRefreshTime: Date.now() });
-
-      wx.showToast({
-        title: '刷新成功',
-        icon: 'success',
-        duration: 1500
+      this.setData({
+        lastRefreshTime: Date.now(),
+        fundRefreshStatus: {
+          ...this.data.fundRefreshStatus,
+          isFromCache: !isInFundRefreshWindow && fundRefreshStatus.isFromCache
+        }
       });
+
+      // 显示刷新结果提示
+      if (isInFundRefreshWindow) {
+        wx.showToast({
+          title: '刷新成功',
+          icon: 'success',
+          duration: 1500
+        });
+      } else {
+        const nextRefresh = fundRefresh.getNextScheduledRefresh();
+        const nextTime = new Date(nextRefresh).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+        wx.showToast({
+          title: `已使用缓存，下次刷新 ${nextTime}`,
+          icon: 'none',
+          duration: 2000
+        });
+      }
     } catch (error) {
       console.error('刷新失败:', error);
       wx.showToast({
@@ -331,6 +406,162 @@ Page({
     } finally {
       this.setData({ isRefreshing: false });
     }
+  },
+
+  // 刷新基金数据
+  async refreshFundData() {
+    const holdings = globalState.allHoldings.filter(
+      item => item && item.assetType === 'fund' && item.assetCode
+    );
+
+    if (holdings.length === 0) return;
+
+    const fundCodes = holdings.map(item => item.assetCode);
+
+    this.setData({
+      fundRefreshStatus: {
+        ...this.data.fundRefreshStatus,
+        status: 'refreshing',
+        refreshProgress: { current: 0, total: fundCodes.length, percentage: 0 }
+      }
+    });
+
+    try {
+      const result = await fundRefresh.refreshMultipleFunds(
+        fundCodes,
+        api.getFundQuote,
+        {
+          forceRefresh: true,
+          onProgress: (progress) => {
+            this.setData({
+              fundRefreshStatus: {
+                ...this.data.fundRefreshStatus,
+                refreshProgress: progress
+              }
+            });
+          }
+        }
+      );
+
+      // 更新刷新状态
+      const status = fundRefresh.getRefreshStatus();
+      this.setData({
+        fundRefreshStatus: {
+          status: status.status,
+          lastUpdate: status.lastUpdate,
+          nextScheduledRefresh: status.nextScheduledRefresh,
+          isFromCache: status.isFromCache,
+          errorMessage: status.errorMessage,
+          refreshProgress: null
+        }
+      });
+
+      console.log('基金刷新结果:', result);
+    } catch (error) {
+      console.error('基金刷新失败:', error);
+      this.setData({
+        fundRefreshStatus: {
+          ...this.data.fundRefreshStatus,
+          status: 'failed',
+          errorMessage: error.message,
+          refreshProgress: null
+        }
+      });
+    }
+  },
+
+  // 自动检查并执行基金定时刷新
+  async autoRefreshFundsIfNeeded() {
+    const holdings = globalState.allHoldings.filter(
+      item => item && item.assetType === 'fund' && item.assetCode
+    );
+
+    if (holdings.length === 0) return;
+
+    const fundCodes = holdings.map(item => item.assetCode);
+    const result = await fundRefresh.autoRefreshIfNeeded(fundCodes, api.getFundQuote);
+
+    if (!result.skipped) {
+      // 更新刷新状态
+      const status = fundRefresh.getRefreshStatus();
+      this.setData({
+        fundRefreshStatus: {
+          status: status.status,
+          lastUpdate: status.lastUpdate,
+          nextScheduledRefresh: status.nextScheduledRefresh,
+          isFromCache: status.isFromCache,
+          errorMessage: status.errorMessage,
+          refreshProgress: null
+        }
+      });
+
+      // 如果刷新成功，重新加载数据
+      if (result.success) {
+        await this.loadAllData(true);
+      }
+    }
+
+    return result;
+  },
+
+  // 更新基金刷新状态显示
+  updateFundRefreshStatus() {
+    const status = fundRefresh.getRefreshStatus();
+    this.setData({
+      fundRefreshStatus: {
+        status: status.status,
+        lastUpdate: status.lastUpdate,
+        nextScheduledRefresh: status.nextScheduledRefresh,
+        isFromCache: status.isFromCache,
+        errorMessage: status.errorMessage,
+        refreshProgress: null
+      }
+    });
+  },
+
+  // 基金手动刷新按钮点击
+  async onFundRefreshTap() {
+    if (this.data.isRefreshing) return;
+
+    // 检查是否在刷新时间窗口内
+    const isInWindow = fundRefresh.isInRefreshWindow();
+
+    if (!isInWindow) {
+      const nextRefresh = fundRefresh.getNextScheduledRefresh();
+      const nextTime = new Date(nextRefresh).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+      wx.showModal({
+        title: '不在刷新时间',
+        content: `基金数据仅在 08:00 和 16:00 前后30分钟内允许刷新。\n\n下次刷新时间：${nextTime}`,
+        showCancel: false,
+        confirmText: '知道了'
+      });
+      return;
+    }
+
+    // 执行基金刷新
+    await this.refreshFundData();
+
+    // 刷新完成后重新加载数据
+    await this.loadAllData(true);
+
+    wx.showToast({
+      title: '刷新完成',
+      icon: 'success',
+      duration: 1500
+    });
+  },
+
+  // 格式化刷新时间（用于WXML显示）
+  formatRefreshTime(timestamp) {
+    if (!timestamp) return '未刷新';
+    return fundRefresh.formatRefreshTime(timestamp);
+  },
+
+  // 格式化下次刷新时间（用于WXML显示）
+  formatNextRefreshTime(timestamp) {
+    if (!timestamp) return '--:--';
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
   },
 
   // 更新缓存统计
