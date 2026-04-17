@@ -11,10 +11,11 @@ Page({
     fundForm: {
       code: '',
       name: '',
-      amount: '',
+      shares: '',
+      costPrice: '',
+      purchaseAmount: '',
       holdingValue: '',
-      netValue: '',
-      shares: ''
+      netValue: ''
     },
     // 股票/黄金表单数据
     formData: {
@@ -58,10 +59,11 @@ Page({
       fundForm: {
         code: '',
         name: '',
-        amount: '',
+        shares: '',
+        costPrice: '',
+        purchaseAmount: '',
         holdingValue: '',
-        netValue: '',
-        shares: ''
+        netValue: ''
       },
       costAmountDisplay: '0.00',
       showCalcResult: false,
@@ -83,19 +85,34 @@ Page({
     }
   },
 
-  // 投资金额输入（可选）
-  onFundAmountInput(e) {
-    this.setData({
-      'fundForm.amount': e.detail.value,
-      showCalcResult: false
-    });
-  },
-
   // 持仓份额输入
   onFundSharesInput(e) {
+    const shares = e.detail.value;
     this.setData({
-      'fundForm.shares': e.detail.value,
+      'fundForm.shares': shares,
       showCalcResult: false
+    });
+    this.calculateFundPurchaseAmount();
+  },
+
+  // 持仓成本输入
+  onFundCostPriceInput(e) {
+    const costPrice = e.detail.value;
+    this.setData({
+      'fundForm.costPrice': costPrice,
+      showCalcResult: false
+    });
+    this.calculateFundPurchaseAmount();
+  },
+
+  // 计算购买金额：份额 × 持仓成本
+  calculateFundPurchaseAmount() {
+    const { shares, costPrice } = this.data.fundForm;
+    const sharesNum = parseFloat(shares) || 0;
+    const costPriceNum = parseFloat(costPrice) || 0;
+    const purchaseAmount = sharesNum * costPriceNum;
+    this.setData({
+      'fundForm.purchaseAmount': purchaseAmount > 0 ? purchaseAmount.toFixed(2) : ''
     });
   },
 
@@ -176,7 +193,7 @@ Page({
 
   // 提交基金持仓
   async submitFundHolding() {
-    const { code, name, amount, netValue, shares } = this.data.fundForm;
+    const { code, name, shares, costPrice, purchaseAmount, netValue } = this.data.fundForm;
 
     if (!this.validateFundForm(true)) return;
 
@@ -191,9 +208,9 @@ Page({
         assetCode: code,
         assetName: name,
         shares: parseFloat(shares),
-        costPrice: parseFloat(netValue),
+        costPrice: parseFloat(costPrice),
         purchaseDate: today,
-        purchaseAmount: amount ? parseFloat(amount) : null
+        purchaseAmount: purchaseAmount ? parseFloat(purchaseAmount) : parseFloat(shares) * parseFloat(costPrice)
       });
 
       // 清除基金持仓缓存，确保主页能显示最新数据
@@ -226,7 +243,12 @@ Page({
 
     const sharesNum = parseFloat(form.shares);
     if (!form.shares || isNaN(sharesNum) || sharesNum <= 0) {
-      errors.push('请输入有效的持仓份额');
+      errors.push('请输入有效的基金份额');
+    }
+
+    const costPriceNum = parseFloat(form.costPrice);
+    if (!form.costPrice || isNaN(costPriceNum) || costPriceNum <= 0) {
+      errors.push('请输入有效的持仓成本');
     }
 
     if (isSubmit && (!form.netValue || !form.holdingValue)) {

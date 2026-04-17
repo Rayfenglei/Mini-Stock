@@ -95,8 +95,11 @@ Page({
           const quoteResult = await api.getFundQuote(holding.assetCode);
           if (quoteResult.code === 0 && quoteResult.data) {
             const quoteData = quoteResult.data;
-            holding.currentPrice = quoteData.netValue;
-            holding.todayProfit = (quoteData.netValue - (holding.costPrice || quoteData.netValue)) * holding.shares;
+            const yesterdayNetValue = parseFloat(quoteData.netValue) || holding.costPrice || 0;
+            const estimateValue = parseFloat(quoteData.estimateValue) || yesterdayNetValue;
+            holding.currentPrice = estimateValue;
+            // 今日收益 = (今日估算净值 - 昨日净值) × 份额
+            holding.todayProfit = (estimateValue - yesterdayNetValue) * holding.shares;
             holding.todayRate = quoteData.estimateRate || 0;
             holding.netValueDate = quoteData.date;
             holding.estimateTime = quoteData.estimateTime;

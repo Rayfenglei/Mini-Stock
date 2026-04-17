@@ -219,12 +219,14 @@ Page({
       totalMarketValue += marketValue;
 
       // 按资产类型统计
+      // 基金使用 purchaseAmount（实际购买金额）作为成本，其他使用 costAmount
+      const itemCostBasis = (item.assetType === 'fund' && item.purchaseAmount) ? item.purchaseAmount : costAmount;
       if (item.assetType === 'stock') {
         stockTotal += marketValue;
         stockCost += costAmount;
       } else if (item.assetType === 'fund') {
         fundTotal += marketValue;
-        fundCost += costAmount;
+        fundCost += itemCostBasis;
       } else if (item.assetType === 'gold') {
         goldTotal += marketValue;
         goldCost += costAmount;
@@ -690,6 +692,8 @@ Page({
     allHoldings.forEach(item => {
       if (!item) return;
       const costAmount = (item.shares || 0) * (item.costPrice || 0);
+      // 基金使用 purchaseAmount（实际购买金额）作为成本，其他使用 costAmount
+      const costBasis = (item.assetType === 'fund' && item.purchaseAmount) ? item.purchaseAmount : costAmount;
 
       // 获取实时价格
       let currentPrice = item.currentPrice || item.costPrice || 0;
@@ -708,7 +712,7 @@ Page({
 
       const marketValue = (item.shares || 0) * currentPrice;
 
-      totalInvestment += costAmount;
+      totalInvestment += costBasis;
       totalMarketValue += marketValue;
 
       // 按资产类型统计
